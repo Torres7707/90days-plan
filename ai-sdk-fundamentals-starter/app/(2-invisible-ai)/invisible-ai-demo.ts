@@ -16,6 +16,37 @@ async function smartFormFill(userInput: string) {
 
   // TODO: Display the extracted data in a user-friendly way
   // Show how this saves the user time and effort
+
+  // Replace the TODOs in smartFormFill with:
+ 
+// Define the structure we want
+const eventSchema = z.object({
+  eventTitle: z.string().describe('The title or purpose of the event'),
+  date: z.string().describe('The date of the event'),
+  time: z.string().nullable().describe('The time of the event'),
+  duration: z.string().nullable().describe('How long the event will last'),
+  location: z.string().nullable().describe('Where the event will take place'),
+  attendees: z.array(z.string()).nullable().describe('People attending'),
+  notes: z.string().nullable().describe('Additional notes or agenda items'),
+});
+ 
+// Extract structured data from natural language
+const { output: eventDetails } = await generateText({
+  model: 'openai/gpt-5-mini',
+  prompt: `Extract calendar event details from: "${userInput}"`,
+  output: Output.object({ schema: eventSchema }),
+});
+ 
+// Display as if it's a form being auto-filled
+console.log('✨ AI automatically fills your form:\n');
+console.log(`📅 Event: ${eventDetails.eventTitle}`);
+console.log(`📆 Date: ${eventDetails.date}`);
+if (eventDetails.time) console.log(`⏰ Time: ${eventDetails.time}`);
+if (eventDetails.location) console.log(`📍 Location: ${eventDetails.location}`);
+if (eventDetails.attendees) console.log(`👥 Attendees: ${eventDetails.attendees.join(', ')}`);
+if (eventDetails.notes) console.log(`📝 Notes: ${eventDetails.notes}`);
+ 
+console.log('\n✅ Form ready to save - no manual input needed!');
 }
 
 // Example: Smart email categorization
@@ -26,11 +57,31 @@ async function smartEmailTriage(emailSubject: string, emailPreview: string) {
   // Include: category (urgent/action-required/fyi/spam/newsletter)
   //          priority (high/medium/low)
   //          suggestedFolder, requiresResponse, estimatedResponseTime
+  const emailSchema = z.object({
+    category: z.enum(['urgent', 'action-required', 'fyi', 'spam', 'newsletter']),
+    priority: z.enum(['high', 'medium', 'low']),
+    suggestedFolder: z.string().nullable().describe('Suggested folder for the email'),
+    requiresResponse: z.boolean().describe('Whether the email requires a response'),
+    estimatedResponseTime: z.string().nullable().describe('Estimated response time'),
+  });
 
   // TODO: Use generateText with Output.object() to analyze and categorize the email
+  const { output: emailDetails } = await generateText({
+    model: 'openai/gpt-5-mini',
+    prompt: `Analyze email: "${emailPreview}"`,
+    output: Output.object({ schema: emailSchema }),
+  });
 
   // TODO: Display the triage results
   // Show how email gets automatically organized
+  console.log('✨ AI automatically categorizes your email:\n');
+console.log(`📧 Category: ${emailDetails.category}`);
+console.log(`🔥 Priority: ${emailDetails.priority}`);
+if (emailDetails.suggestedFolder) console.log(`📂 Suggested Folder: ${emailDetails.suggestedFolder}`);
+if (emailDetails.requiresResponse) console.log(`📩 Requires Response: ${emailDetails.requiresResponse}`);
+if (emailDetails.estimatedResponseTime) console.log(`⏰ Estimated Response Time: ${emailDetails.estimatedResponseTime}`);
+ 
+console.log('\n✅ Email ready to process - no manual input needed!');
 }
 
 async function runExamples() {
