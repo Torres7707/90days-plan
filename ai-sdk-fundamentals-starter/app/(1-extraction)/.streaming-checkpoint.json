@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "sourcePath": "app/(1-extraction)/essay.txt",
+  "totalChunks": 21,
+  "completed": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "results": {
+    "0": {
+      "index": 0,
+      "summary": "At a YC event Brian Chesky gave a memorable talk that founders praised and that even made Ron Conway forget to take notes. Chesky argued the conventional wisdom about scaling companies — e.g., \"hire good people and give them room\" — was mistaken, since following it produced disastrous results for Airbnb. He developed a different approach partly by studying how Steve Jobs ran Apple, and Airbnb's free cash flow margin is now among the best in Silicon Valley.",
+      "people": [
+        "Brian Chesky",
+        "Ron Conway",
+        "Steve Jobs"
+      ]
+    },
+    "1": {
+      "index": 1,
+      "summary": "At an event many successful founders reported that standard advice on scaling had harmed rather than helped their companies. The author realized that the advice was aimed at professional managers, not founders, and argues there are two distinct operating modes—founder mode and manager mode—while most assume scaling requires switching to manager mode even though that can be ineffective for founders.",
+      "people": []
+    },
+    "2": {
+      "index": 2,
+      "summary": "The chunk says there are currently no books or business-school teachings about \"founder mode\" — only individual founders' experiments — but now that it's identifiable we can start studying it and hope it becomes as well understood as manager mode. It contrasts founder and manager modes: managers are taught to treat organizational subtrees as black boxes and avoid getting into details to prevent micromanaging, but that hands-off approach can enable \"professional fakers\" to run a company into the ground.",
+      "people": []
+    },
+    "3": {
+      "index": 3,
+      "summary": "The author notes a recurring theme from Brian's talk and founder conversations: founders often feel \"gaslit\" both by advisors urging managerial norms and by their own staff. The piece argues this is a rare case where dissent doesn't imply the founder is wrong—non-founder VCs lack operational insight and some C-level execs may be deceptive—and predicts founder mode will break the norm of CEOs engaging only through direct reports, making skip-level meetings and many variants common.",
+      "people": [
+        "Brian"
+      ]
+    },
+    "4": {
+      "index": 4,
+      "summary": "The chunk describes Steve Jobs running annual retreats for the roughly 100 most important people at Apple as an example of founder-led practices that make large companies feel like startups, noting it's rare elsewhere and its value is uncertain. It argues founders cannot run large companies as they did when small, so delegation and varying borders of autonomy are necessary; founder mode is more complicated than manager mode but can be more effective.",
+      "people": [
+        "Steve Jobs"
+      ]
+    },
+    "5": {
+      "index": 5,
+      "summary": "The author predicts that once \"founder mode\" is understood, many individual founders will be recognized as already close to it despite being labeled eccentric. They find it encouraging that founders have achieved much despite poor advice and imagine that better guidance could steer them to run companies like Steve Jobs instead of John Sculley; notes add that C-level execs often manage up and that retreat invite depth could quantify company senescence.",
+      "people": [
+        "Steve Jobs",
+        "John Sculley"
+      ]
+    },
+    "6": {
+      "index": 6,
+      "summary": "The author predicts that once \"founder mode\" is established people will misuse it—founders who can't delegate will use it as an excuse and non-founder managers will imitate founders, leading to messy outcomes when it fails; a modular approach can limit harm from a bad CEO. The author then describes a memorable September 2024 YC event where Brian Chesky gave an unforgettable talk (even Ron Conway forgot to take notes), and says they'll focus on a question the talk raised rather than reproducing it.",
+      "people": [
+        "Brian Chesky",
+        "Ron Conway"
+      ]
+    },
+    "7": {
+      "index": 7,
+      "summary": "Brian argued that conventional advice about scaling companies—essentially \"hire good people and give them room\"—was wrong; following it at Airbnb produced poor results, so he studied how Steve Jobs ran Apple and adopted a different approach that has improved Airbnb's free cash flow margin. Many successful founders in the audience said they'd had the same damaging experience with that conventional wisdom.",
+      "people": [
+        "Brian",
+        "Steve Jobs"
+      ]
+    },
+    "8": {
+      "index": 8,
+      "summary": "The author realized advice given to founders was actually how to run a company as a professional manager, which is much less effective for someone who founded the company. There are two distinct modes—founder mode and manager mode—and assuming startups must switch to manager mode overlooks things founders can do that managers cannot, explaining founders' dismay and resistance.",
+      "people": []
+    },
+    "9": {
+      "index": 9,
+      "summary": "The author notes there are no books or business school teachings about \"founder mode\" and that knowledge so far comes from individual founders' experiments; they hope founder mode becomes as well understood as manager mode and offer guesses about differences. They contrast manager mode as treating organizational subtrees as black boxes—avoiding involvement in details to prevent micromanaging—and warn this can lead to hiring \"professional fakers\" who drive companies into the ground.",
+      "people": []
+    },
+    "10": {
+      "index": 10,
+      "summary": "The chunk discusses founders feeling \"gaslit\" by both advisors pushing managerial norms and by employees when those norms are adopted, arguing that VCs who haven't been founders and some C-level execs can mislead founders. It also says \"founder mode\" will discard the CEO-only-engage-via-direct-reports rule, making skip-level meetings common and opening many possible variations of engagement.",
+      "people": [
+        "Brian"
+      ]
+    },
+    "11": {
+      "index": 11,
+      "summary": "Steve Jobs ran annual retreats for what he considered the 100 most important people at Apple—people not necessarily highest on the org chart—which suggests practices like this could make a large company feel more like a startup, though few companies do it. Founders can't run a 2000-person company the way they ran it at 20, so delegation and varying borders of autonomy are necessary; founder mode is more complicated than manager mode but can work better as founders and managers earn trust.",
+      "people": [
+        "Steve Jobs"
+      ]
+    },
+    "12": {
+      "index": 12,
+      "summary": "The author predicts that once \"founder mode\" is understood, we'll find many founders were already practicing it despite being seen as eccentric. They note founders have succeeded despite bad advice and suggest that guiding them to run companies like Steve Jobs instead of John Sculley could increase their impact.",
+      "people": [
+        "Steve Jobs",
+        "John Sculley"
+      ]
+    },
+    "13": {
+      "index": 13,
+      "summary": "The author predicts that once \"founder mode\" is established, it will be misused by founders who won't delegate and by non-founders trying to act like founders, causing messy results that the modular approach can at least limit. The author then recalls a memorable talk by Brian Chesky at a YC event that left many founders impressed (Ron Conway even forgot to take notes) and says they will discuss a question the talk raised rather than reproduce it.",
+      "people": [
+        "Brian Chesky",
+        "Ron Conway"
+      ]
+    },
+    "14": {
+      "index": 14,
+      "summary": "Brian argued that the conventional wisdom for running growing companies — summarized as \"hire good people and give them room\" — was mistaken; applying it at Airbnb produced disastrous results, so he developed a different approach partly by studying how Steve Jobs ran Apple. That approach appears to be working: Airbnb's free cash flow margin is now among the best in Silicon Valley, and many founders in the audience reported experiencing the same harms from the conventional advice.",
+      "people": [
+        "Brian",
+        "Steve Jobs"
+      ]
+    },
+    "15": {
+      "index": 15,
+      "summary": "The author realized founders were being advised to operate as professional managers—an approach that doesn't work well for companies that founders actually started. They distinguish two modes of running a company—founder mode and manager mode—and argue that the common assumption (even in Silicon Valley) that scaling requires switching to manager mode is mistaken, as shown by founders' dismay and attempts to escape it.",
+      "people": []
+    },
+    "16": {
+      "index": 16,
+      "summary": "The author notes there are no books or formal teaching about \"founder mode\" and that it's currently learned through individual founders' experiments, with the hope it will become as well understood as manager mode. They contrast founder and manager modes, arguing that manager training treats teams as black boxes and avoids involvement to prevent micromanaging—which can lead in practice to hiring \"professional fakers\" who harm the company.",
+      "people": []
+    },
+    "17": {
+      "index": 17,
+      "summary": "The chunk describes a theme of founders feeling \"gaslit\" both by advisors urging managerial approaches and by employees, arguing that this is a rare case where widespread disagreement doesn't imply the founder is wrong because many VCs lack founder experience and some C-level execs can be deceptive. It also predicts that \"founder mode\" will break the norm that CEOs only engage through direct reports, making skip-level meetings common and opening many alternative engagement permutations.",
+      "people": [
+        "Brian"
+      ]
+    },
+    "18": {
+      "index": 18,
+      "summary": "The chunk describes Steve Jobs' annual retreat for the 100 most important people at Apple (not the top 100 on the org chart) as an example of founder-driven practices and raises the question of whether such rituals are broadly useful. It argues that founders must delegate as companies scale, that the boundaries of autonomy will vary across time and organizations, and that founder mode is more complicated but often more effective than manager mode.",
+      "people": [
+        "Steve Jobs"
+      ]
+    },
+    "19": {
+      "index": 19,
+      "summary": "The author predicts that once \"founder mode\" is understood, we'll recognize many founders were already operating in it despite being labeled eccentric. They note it's encouraging we know little about it, point out founders have succeeded despite bad advice, and imagine greater success if they were guided to run companies like Steve Jobs instead of John Sculley.",
+      "people": [
+        "Steve Jobs",
+        "John Sculley"
+      ]
+    },
+    "20": {
+      "index": 20,
+      "summary": "The author predicts that once \"founder mode\" becomes established, people will misuse it—founders who won't delegate will use it as an excuse and non-founders or managers will try to act like founders. While this imitation may sometimes work, it will often produce messy results, and the modular approach helps limit the damage a bad CEO can cause.",
+      "people": []
+    }
+  }
+}
