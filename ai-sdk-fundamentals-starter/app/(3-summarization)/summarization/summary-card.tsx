@@ -7,25 +7,31 @@ import { CardContent, Card } from "@/components/ui/card";
 
 type SummaryCardProps = {
   headline: string;
-  context: string;
-  discussionPoints: string;
-  takeaways: string;
+  context: string[];
+  discussionPoints: string[];
+  takeaways: string[];
 };
 
 export function SummaryCard({
   headline,
   discussionPoints,
   takeaways,
-  context
+  context,
 }: SummaryCardProps) {
   return (
     <Card>
       <CardContent className="space-y-4">
         <h2 className="text-xl font-semibold pt-4">{headline}</h2>
         <ul className="list-disc space-y-2 pl-5 text-sm">
-          <li>{context}</li>
-          <li>{discussionPoints}</li>
-          <li>{takeaways}</li>
+          {context.map((sentence) => (
+            <li key={sentence}>{sentence}</li>
+          ))}
+          {discussionPoints.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+          {takeaways.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
         </ul>
       </CardContent>
     </Card>
