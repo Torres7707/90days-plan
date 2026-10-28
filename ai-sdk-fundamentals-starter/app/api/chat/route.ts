@@ -4,6 +4,7 @@ import {
   createUIMessageStreamResponse,
   toUIMessageStream,
 } from "ai";
+import { getWeather } from "./tools";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -21,6 +22,7 @@ export async function POST(req: Request) {
       Respond exactly how he would, in exactly his tone.
       It is 1984 you have just created the Macintosh.`,
       messages: await convertToModelMessages(messages),
+      tools: { getWeather },
     });
 
     return createUIMessageStreamResponse({
