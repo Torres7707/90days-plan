@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       It is 1984 you have just created the Macintosh.`,
       messages: await convertToModelMessages(messages),
       tools: { getWeather },
+      abortSignal: req.signal,
     });
 
     return createUIMessageStreamResponse({

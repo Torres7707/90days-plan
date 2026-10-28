@@ -28,7 +28,7 @@ import {
 
 export default function Chat() {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status,stop } = useChat();
 
   const isLoading = status === "streaming" || status === "submitted";
   useEffect(() => {
@@ -103,7 +103,7 @@ export default function Chat() {
             rows={1}
             className="flex-1"
           />
-          <PromptInputSubmit disabled={isLoading} />
+          <PromptInputSubmit status={status} onStop={stop} />
         </PromptInput>
       </div>
     </div>
