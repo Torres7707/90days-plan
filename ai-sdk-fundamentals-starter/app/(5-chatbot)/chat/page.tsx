@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import type { UIMessage } from "ai";
 import { useEffect, useState } from "react";
 
 import {
@@ -19,16 +20,27 @@ import {
   PromptInputSubmit,
 } from "@/components/ai-elements/prompt-input";
 import {
-	Tool,
-	ToolContent,
-	ToolHeader,
-	ToolInput,
-	ToolOutput,
-  } from "@/components/ai-elements/tool";
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
+
+import Weather, { type WeatherData } from "./weather";
+
+type WeatherTools = {
+  getWeather: {
+    input: { city: string; region?: string };
+    output: WeatherData;
+  };
+};
 
 export default function Chat() {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status,stop } = useChat();
+  const { messages, sendMessage, status, stop } = useChat<
+    UIMessage<never, never, WeatherTools>
+  >();
 
   const isLoading = status === "streaming" || status === "submitted";
   useEffect(() => {
@@ -57,18 +69,39 @@ export default function Chat() {
                               </MessageResponse>
                             );
                           case "tool-getWeather": // Tool parts are named "tool-TOOLNAME"
+                            // Show Weather component for completed tool calls
+                            if (
+                              part.state === "output-available" &&
+                              part.output
+                            ) {
+                              return (
+                                <Weather
+                                  key={part.toolCallId || `${message.id}-${i}`}
+                                  weatherData={part.output}
+                                />
+                              );
+                            }
                             // For now, show raw JSON to see what we're working with
                             return (
-								<Tool key={part.toolCallId || `${message.id}-${i}`}>
-								<ToolHeader type={part.type} state={part.state} />
-								<ToolContent>
-								  <ToolInput input={part.input} />
-								  <ToolOutput
-									output={JSON.stringify(part.output, null, 2)}
-									errorText={part.errorText}
-								  />
-								</ToolContent>
-							  </Tool>
+                              <Tool
+                                key={part.toolCallId || `${message.id}-${i}`}
+                              >
+                                <ToolHeader
+                                  type={part.type}
+                                  state={part.state}
+                                />
+                                <ToolContent>
+                                  <ToolInput input={part.input} />
+                                  <ToolOutput
+                                    output={JSON.stringify(
+                                      part.output,
+                                      null,
+                                      2,
+                                    )}
+                                    errorText={part.errorText}
+                                  />
+                                </ToolContent>
+                              </Tool>
                             );
                           default:
                             return null;

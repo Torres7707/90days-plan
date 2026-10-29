@@ -3,6 +3,7 @@ import {
   convertToModelMessages,
   createUIMessageStreamResponse,
   toUIMessageStream,
+  isStepCount
 } from "ai";
 import { getWeather } from "./tools";
 
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
       messages: await convertToModelMessages(messages),
       tools: { getWeather },
       abortSignal: req.signal,
+      stopWhen: isStepCount(5), // ADD THIS: Enables up to 5 steps
     });
 
     return createUIMessageStreamResponse({

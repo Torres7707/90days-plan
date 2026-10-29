@@ -50,7 +50,7 @@ export const getWeather = tool({
     const response = await fetch(
       `https://api.open-meteo.com/v1/forecast?` +
         `latitude=${coords.lat}&longitude=${coords.lon}&` +
-        `current=temperature_2m,weathercode&timezone=auto`,
+        `current=temperature_2m,relative_humidity_2m,weather_code&timezone=auto`,
     );
 
     const weatherData = await response.json();
@@ -58,7 +58,8 @@ export const getWeather = tool({
     return {
       city,
       temperature: weatherData.current.temperature_2m,
-      weatherCode: weatherData.current.weathercode,
+      weatherCode: weatherData.current.weather_code,
+      humidity: weatherData.current.relative_humidity_2m,
     };
   },
 });
