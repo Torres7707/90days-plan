@@ -6,7 +6,13 @@
 
 // **第 3 题：泛型 `first`**
 // 写 `first<T>(arr: T[]): T | undefined`。先不手写 `<T>` 调用，再手写 `<string>` 调用，用鼠标悬停确认两种情况下的返回类型。再试一下 `first<number>(["a"])`，看看会发生什么。
-
+function first<T>(arr: T[]): T | undefined{
+    return arr[0] as T | undefined;
+}
+const a = first([1, 2, 3]);
+const b = first<string>(["a", "b", "c"]);
+const c = first<number>([1]);
+const d = first<number>(["a"]);
 
 function f(opts?: { a?: number; b?: string }) {}
 
