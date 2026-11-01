@@ -3,7 +3,8 @@ import {
   convertToModelMessages,
   createUIMessageStreamResponse,
   toUIMessageStream,
-  isStepCount
+  isStepCount,
+  UIMessage,
 } from "ai";
 import { getWeather } from "./tools";
 
@@ -12,7 +13,7 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const { messages }: { messages: UIMessage[] } = await req.json();
 
     const result = streamText({
       model: "openai/gpt-5-mini", // Fast model for real-time chat (immediate streaming, low latency)
@@ -29,7 +30,13 @@ export async function POST(req: Request) {
     });
 
     return createUIMessageStreamResponse({
-      stream: toUIMessageStream({ stream: result.stream }),
+      stream: toUIMessageStream({
+        stream: result.stream,
+        onError: (error) => {
+          console.error("Chat API error:", error);
+          return `An error occurred: ${error instanceof Error ? error.message : "Unknown error"}`;
+        },
+      }),
     });
   } catch (error) {
     console.error("Chat API error:", error);

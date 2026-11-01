@@ -38,9 +38,8 @@ type WeatherTools = {
 
 export default function Chat() {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status, stop } = useChat<
-    UIMessage<never, never, WeatherTools>
-  >();
+  const { messages, sendMessage, status, stop, error } =
+    useChat<UIMessage<never, never, WeatherTools>>();
 
   const isLoading = status === "streaming" || status === "submitted";
   useEffect(() => {
@@ -50,7 +49,9 @@ export default function Chat() {
     <div className="flex flex-col h-screen">
       <Conversation>
         <ConversationContent>
-          {messages.length === 0 ? (
+          {error ? (
+            <MessageContent>{error.message}</MessageContent>
+          ) : messages.length === 0 ? (
             <ConversationEmptyState
               title="Start a conversation"
               description="Type a message below to begin"
