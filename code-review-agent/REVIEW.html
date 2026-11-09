@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Review Agent - 项目审查报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/rehype-slug@6.0.0/index.min.js"></link>
+    <script src="https://unpkg.com/marked@12.0.2/marked.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .prose-custom h1 { @apply text-3xl font-bold mt-10 mb-6 pb-2 border-b border-gray-200; }
+        .prose-custom h2 { @apply text-2xl font-semibold mt-8 mb-4 pb-2 border-b border-gray-100; }
+        .prose-custom h3 { @apply text-xl font-semibold mt-6 mb-3 text-gray-800; }
+        .prose-custom p { @apply my-4 leading-relaxed text-gray-700; }
+        .prose-custom ul { @apply list-disc list-inside my-4 space-y-2 text-gray-700; }
+        .prose-custom ol { @apply list-decimal list-inside my-4 space-y-2 text-gray-700; }
+        .prose-custom li { @apply pl-2; }
+        .prose-custom code { @apply bg-gray-100 text-pink-600 px-2 py-1 rounded text-sm font-mono; }
+        .prose-custom pre { @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm; }
+        .prose-custom pre code { @apply bg-transparent text-gray-100 p-0; }
+        .prose-custom table { @apply w-full my-6 border-collapse; }
+        .prose-custom th { @apply bg-gray-100 font-semibold text-left p-3 border border-gray-200; }
+        .prose-custom td { @apply p-3 border border-gray-200; }
+        .prose-custom tr:nth-child(even) { @apply bg-gray-50; }
+        .badge { @apply inline-block px-2 py-0.5 rounded-full text-xs font-medium; }
+        .badge-green { @apply bg-green-100 text-green-800; }
+        .badge-yellow { @apply bg-yellow-100 text-yellow-800; }
+        .badge-red { @apply bg-red-100 text-red-800; }
+        .card { @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6; }
+        .variant-card { @apply bg-white rounded-xl shadow-sm border-2 p-6 mb-4 transition hover:shadow-md; }
+        .variant-card.recommended { @apply border-blue-500 ring-2 ring-blue-500 ring-opacity-20; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Code Review Agent</h1>
+            <p class="text-xl text-gray-600">项目审查报告 · 需求设计文档 · UI改进建议</p>
+            <div class="flex items-center justify-center gap-4 mt-6 text-sm text-gray-500">
+                <span class="badge badge-green">总评分: 8.5/10</span>
+                <span>更新日期: 2026-11-09</span>
+            </div>
+        </header>
+
+        <!-- Executive Summary -->
+        <section class="card bg-gradient-to-r from-blue-50 to-purple-50 border-0">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">📋 执行摘要</h2>
+            <p class="text-gray-800 leading-relaxed">
+                本项目是一个基于AI的<strong>React代码审查Agent</strong>，采用Next.js 16 + AI SDK v7构建。
+                目前已实现核心架构、流式API和三套UI原型，整体完成度<strong>约70%</strong>。
+                项目在技术选型、代码结构和原型设计方面表现出色，但在错误处理、输入验证和生产环境优化方面仍有提升空间。
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600">✓</div>
+                    <div class="text-xs text-gray-600 mt-1">架构设计</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600">✓</div>
+                    <div class="text-xs text-gray-600 mt-1">UI原型</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-yellow-600">⚠</div>
+                    <div class="text-xs text-gray-600 mt-1">错误处理</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-yellow-600">⚠</div>
+                    <div class="text-xs text-gray-600 mt-1">安全防护</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Overview -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">1</span>
+                项目概述
+            </h2>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">🎯 项目定位</h3>
+                <p class="text-gray-700 leading-relaxed">
+                    一个<strong>React代码审查Agent</strong>，使用AI技术自动分析React + TypeScript代码，
+                    识别真实问题并按严重程度排序，提供修复建议。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 当前状态</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="badge badge-green">已完成</span>
+                        <span class="text-gray-700">原型UI设计（三种变体）</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="badge badge-green">已完成</span>
+                        <span class="text-gray-700">流式API基础结构</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="badge badge-green">已完成</span>
+                        <span class="text-gray-700">聊天组件集成</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="badge badge-yellow">待完成</span>
+                        <span class="text-gray-700">核心审查逻辑实现</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="badge badge-yellow">待完成</span>
+                        <span class="text-gray-700">输入验证与错误处理</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="badge badge-yellow">待完成</span>
+                        <span class="text-gray-700">请求限流与安全防护</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Features -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">2</span>
+                核心功能需求
+            </h2>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="badge badge-red">FR-1</span>
+                    代码输入与提交
+                </h3>
+                <div class="space-y-3 text-gray-700">
+                    <p><strong>描述：</strong>用户粘贴React/TypeScript代码到编辑器</p>
+                    <p><strong>输入：</strong>React组件代码文本</p>
+                    <p><strong>输出：</strong>提交审核请求</p>
+                    <div class="bg-gray-50 rounded-lg p-4 mt-3">
+                        <p class="font-semibold text-gray-800 mb-2">约束条件：</p>
+                        <ul class="list-disc list-inside text-sm">
+                            <li>支持 GitHub URL 输入（推荐）</li>
+                            <li>支持手动粘贴代码（备选）</li>
+                            <li>空输入时禁用提交按钮</li>
+                            <li>显示当前状态（空闲/流式处理中）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="badge badge-red">FR-2</span>
+                    AI代码审查
+                </h3>
+                <div class="space-y-3 text-gray-700">
+                    <p><strong>描述：</strong>使用LLM分析代码，识别真实问题</p>
+                    <div class="bg-gray-50 rounded-lg p-4 mt-3">
+                        <p class="font-semibold text-gray-800 mb-3">审查规则：</p>
+                        <ul class="list-disc list-inside text-sm space-y-2">
+                            <li>仅报告真实问题（bug、hook误用、依赖数组缺失、闭包过期、缺少key等）</li>
+                            <li>按严重程度排序：🔴 High → 🟡 Medium → 🟢 Low</li>
+                            <li>每条问题包含：代码片段、原因说明（Why）、修复建议（Fix）</li>
+                            <li>无问题时回复："No problems found ✅"</li>
+                            <li>响应语言与用户输入语言一致</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="badge badge-red">FR-3</span>
+                    流式输出展示
+                </h3>
+                <div class="space-y-3 text-gray-700">
+                    <p><strong>描述：</strong>实时展示AI审查结果，带有动画效果</p>
+                    <div class="bg-gray-50 rounded-lg p-4 mt-3">
+                        <p class="font-semibold text-gray-800 mb-2">技术特性：</p>
+                        <ul class="list-disc list-inside text-sm">
+                            <li>使用AI SDK v7的流式响应</li>
+                            <li>逐字流式渲染</li>
+                            <li>支持Markdown格式展示</li>
+                            <li>显示token使用统计</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="badge badge-red">FR-4</span>
+                    交互控制
+                </h3>
+                <div class="space-y-3 text-gray-700">
+                    <p><strong>描述：</strong>用户可中断流式响应</p>
+                    <div class="bg-gray-50 rounded-lg p-4 mt-3">
+                        <p class="font-semibold text-gray-800 mb-2">功能：</p>
+                        <ul class="list-disc list-inside text-sm">
+                            <li><strong>Stop按钮：</strong>中断当前流式生成</li>
+                            <li><strong>Review按钮：</strong>触发代码审查</li>
+                            <li><strong>状态指示：</strong>显示当前是否在处理中</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">3</span>
+                技术架构
+            </h2>
+
+            <div class="card bg-gray-900 text-gray-100">
+                <h3 class="text-xl font-semibold mb-4 text-white">🏗️ 系统架构图</h3>
+                <pre class="bg-gray-800 p-4 rounded-lg text-sm font-mono overflow-x-auto"><code>┌─────────────────────────────────────────────────────────┐
+│                      Frontend (Next.js)                  │
+│  ┌────────────────┐    ┌──────────────────────────┐    │
+│  │  UI Layer      │    │  State Management        │    │
+│  │  Split IDE     │◄──►│  useChat + useState     │    │
+│  └────────────────┘    └──────────────────────────┘    │
+│         │                        ▲                      │
+│         │ sendMessage            │ messages             │
+│         ▼                        │                     │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │            API Route (/api/review)               │  │
+│  │  POST handler:                                 │  │
+│  │  1. 解析输入类型 (GitHub URL / 直接代码)          │  │
+│  │  2. GitHub API 拉取代码 (如适用)                 │  │
+│  │  3. convertToModelMessages → streamText → Response│  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+        ▲                        ▲
+        │                        │
+        │ GitHub API             │ AI SDK v7 + Gateway
+        ▼                        ▼
+┌─────────────────┐    ┌──────────────────────────────┐
+│ GitHub REST API │    │ streamText({                  │
+│ /repos/{owner}/ │    │   model: "openai/gpt-5-mini" │
+│ {repo}/pulls/...│    │ }) → 流式审查结果            │
+└─────────────────┘    └──────────────────────────────┘</code></pre>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📦 技术栈</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">框架</p>
+                        <p class="text-sm text-gray-600">Next.js 16.4.3 (App Router)</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">AI</p>
+                        <p class="text-sm text-gray-600">AI SDK v7</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">前端</p>
+                        <p class="text-sm text-gray-600">React 19.3.0, TypeScript 5</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">样式</p>
+                        <p class="text-sm text-gray-600">Tailwind CSS 4</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">动画</p>
+                        <p class="text-sm text-gray-600">streamdown 2.7.1</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">验证</p>
+                        <p class="text-sm text-gray-600">Zod 4.6.7</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UI Variants Analysis -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <span class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-bold">4</span>
+                UI变体对比分析
+            </h2>
+
+            <!-- Variant A -->
+            <div class="variant-card">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">🅰️ Variant A: Stacked Workspace</h3>
+                        <p class="text-gray-600 mt-1">温暖极简 · 报纸风格</p>
+                    </div>
+                    <span class="badge badge-yellow">备选</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="font-semibold text-gray-800 mb-2">✅ 优点</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>聚焦、清爽、无干扰</li>
+                            <li>适合快速审查</li>
+                            <li>移动端友好</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800 mb-2">❌ 缺点</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>空间利用率低</li>
+                            <li>信息密度不够</li>
+                            <li>专业感稍弱</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 rounded-lg" style="background: linear-gradient(135deg, #f6f3ee 0%, #fff 100%);">
+                    <p class="text-xs text-gray-600"><strong>适合场景：</strong>快速审查、移动端、演示</p>
+                </div>
+            </div>
+
+            <!-- Variant B (Recommended) -->
+            <div class="variant-card recommended">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">🅱️ Variant B: Split IDE</h3>
+                        <p class="text-gray-600 mt-1">深色IDE风格 · 专业级</p>
+                    </div>
+                    <span class="badge badge-green">⭐ 推荐</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="font-semibold text-gray-800 mb-2">✅ 优点</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>专业工具定位，符合用户心智</li>
+                            <li>信息密度高，代码和结果同时可见</li>
+                            <li>减少滚动，提升效率</li>
+                            <li>可扩展性强（行号、文件树、diff视图）</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800 mb-2">❌ 缺点</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>小屏幕需要适配</li>
+                            <li>初始学习成本略高</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 rounded-lg bg-blue-50">
+                    <p class="text-xs text-blue-800"><strong>推荐理由：</strong>代码审查是专业任务，IDE风格最合适，且便于未来扩展</p>
+                </div>
+            </div>
+
+            <!-- Variant C -->
+            <div class="variant-card">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">🅲 Variant C: Chat Transcript</h3>
+                        <p class="text-gray-600 mt-1">聊天应用风格 · 对话式</p>
+                    </div>
+                    <span class="badge badge-yellow">备选</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="font-semibold text-gray-800 mb-2">✅ 优点</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>交互自然、对话感强</li>
+                            <li>支持多轮对话</li>
+                            <li>适合教学演示</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800 mb-2">❌ 缺点</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>代码展示不够突出</li>
+                            <li>不适合大段代码</li>
+                            <li>专业感不足</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 rounded-lg" style="background: linear-gradient(135deg, #e8f0ea 0%, #fff 100%);">
+                    <p class="text-xs text-gray-600"><strong>适合场景：</strong>多人协作、教学、客服对话</p>
+                </div>
+            </div>
+
+            <!-- Recommendation -->
+            <div class="card bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                <h3 class="text-lg font-bold text-green-800 mb-3">🎯 推荐方案</h3>
+                <p class="text-gray-700">
+                    <strong>采用 Variant B (Split IDE)</strong>，理由如下：
+                </p>
+                <ol class="list-decimal list-inside mt-3 space-y-1 text-gray-700">
+                    <li><strong>专业工具定位：</strong>代码审查是专业任务，IDE风格符合用户心智模型</li>
+                    <li><strong>信息密度高：</strong>左右分栏让代码和审查结果同时可见，减少滚动</li>
+                    <li><strong>可扩展性强：</strong>未来可加入行号、文件树、diff视图等功能</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- GitHub URL Solution -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <span class="w-10 h-10 bg-github-800 rounded-lg flex items-center justify-center text-white font-bold">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.295-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
+                    </svg>
+                </span>
+                GitHub URL方案
+            </h2>
+
+            <div class="card bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100 border-0">
+                <h3 class="text-xl font-bold mb-4 text-white">🎯 核心问题</h3>
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    <strong>痛点：</strong>当前交互需要手动复制、粘贴代码，这在真实开发工作流中极其不自然。
+                    开发者不是Copy/Paste的机器——他们的代码在Git仓库里、在PR里、在本地IDE中。
+                </p>
+
+                <div class="bg-gray-950 rounded-lg p-5">
+                    <h4 class="font-semibold text-green-400 mb-3">✅ 推荐解决方案</h4>
+                    <ol class="list-decimal list-inside space-y-2">
+                        <li><strong>GitHub URL 输入：</strong>支持 GitHub Repo / File / PR 链接</li>
+                        <li><strong>智能代码拉取：</strong>后端调用 GitHub REST API 获取代码内容</li>
+                        <li><strong>自动 Diff 审查：</strong>PR链接自动提取变更内容进行审查</li>
+                        <li><strong>保留手动粘贴：</strong>作为备选方案，支持小段代码快速审查</li>
+                    </ol>
+                </div>
+
+                <div class="mt-5 bg-gray-950 rounded-lg p-5">
+                    <h4 class="font-semibold text-blue-400 mb-3">📁 支持的输入类型</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-900 rounded p-3">
+                            <p class="font-semibold text-gray-200">Repository</p>
+                            <p class="text-xs text-gray-400">https://github.com/vercel/next.js</p>
+                        </div>
+                        <div class="bg-gray-900 rounded p-3">
+                            <p class="font-semibold text-gray-200">File</p>
+                            <p class="text-xs text-gray-400">https://github.com/too.../app/page.tsx</p>
+                        </div>
+                        <div class="bg-gray-900 rounded p-3">
+                            <p class="font-semibold text-gray-200">Pull Request</p>
+                            <p class="text-xs text-gray-400">https://github.com/.../pull/123</p>
+                        </div>
+                        <div class="bg-gray-900 rounded p-3">
+                            <p class="font-semibold text-gray-200">Raw Text</p>
+                            <p class="text-xs text-gray-400">(直接粘贴，备选)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🔧 技术实现细节</h3>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">1️⃣ 输入检测</p>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono"><code>// 判断输入类型
+function detectInputType(input: string): 'github-url' | 'raw-code' {
+  const githubUrlPattern = /^https?:\/\/github\.com\/...;
+  return githubUrlPattern.test(input) ? 'github-url' : 'raw-code';
+}</code></pre>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">2️⃣ GitHub API 调用</p>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono"><code>// 服务端：拉取文件内容
+async fetchGitHubFile(url: string): Promise&lt;string&gt; {
+  const apiUrl = url.replace('github.com', 'api.github.com/repos');
+  const res = await fetch(apiUrl, {
+    headers: { Accept: 'application/vnd.github.raw' }
+  });
+  return res.text();
+}
+
+// 拉取 PR diff
+async fetchPRDiff(repo: string, prNumber: number): Promise&lt;string&gt; {
+  const res = await fetch(
+    `https://api.github.com/repos/${repo}/pulls/${prNumber}`,
+    { headers: { Accept: 'application/vnd.github.v3.diff' } }
+  );
+  return res.text();
+}</code></pre>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">3️⃣ UI 改进</p>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono"><code>&lt;input
+  type="url"
+  placeholder="GitHub repo, file, or PR link..."
+  onChange={handleUrlInput}
+/&gt;
+
+// 或智能输入框
+&lt;IntelligentInput
+  detectType={detectInputType}
+  onSubmit={handleSubmit}
+/&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-6 bg-blue-50">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">💡 用户体验提升</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">🚀 效率提升</p>
+                        <ul class="list-disc list-inside text-sm text-gray-700">
+                            <li>无需打开编辑器复制代码</li>
+                            <li>直接审查正在工作的 PR</li>
+                            <li>支持审查整个仓库的特定文件</li>
+                            <li>减少上下文切换成本</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">📈 实际场景</p>
+                        <ul class="list-disc list-inside text-sm text-gray-700">
+                            <li>Code Review 时复制 PR 链接</li>
+                            <li>审查开源项目特定文件</li>
+                            <li>快速检查依赖库的使用是否正确</li>
+                            <li>教学演示时指向示例仓库</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-6 bg-yellow-50 border-yellow-200">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚠️ 注意事项</h3>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li><strong>GitHub API 限额：</strong>未认证 60次/小时；需要 Option Pro/Team 或配置 GITHUB_TOKEN</li>
+                    <li><strong>私有仓库：</strong>需要用户授权 token，当前版本暂不支持（后续迭代）</li>
+                    <li><strong>大文件限制：</strong>GitHub API 限制 1MB，PR diff 通常不会超过</li>
+                    <li><strong>网络延迟：</strong>首次拉取可能 1-2秒，可在 UI 显示加载状态</li>
+                    <li><strong>错误处理：</strong>404（不存在）、403（无权限）、422（无效URL）需要友好提示</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- UI Improvements -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <span class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 font-bold">6</span>
+                UI改进建议
+            </h2>
+
+            <div class="card bg-gradient-to-r from-blue-50 to-purple-50 border-0">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">🔄 输入交互重构（优先实施）</h3>
+                <p class="text-gray-700 mb-4">
+                    <strong>核心转变：</strong>从"粘贴代码"转向"输入 GitHub 链接"
+                </p>
+                <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm font-mono overflow-x-auto">// 方案 A：双模式输入（推荐）
+&lt;ReviewInput
+  mode="github-url"
+  placeholder="GitHub repo, file, or PR URL..."
+  showExample={true}
+/&gt;
+
+&lt;ReviewInput
+  mode="raw-code"
+  placeholder="或粘贴代码..."
+  showExample={true}
+/&gt;
+
+// 方案 B：智能检测输入类型
+&lt;IntelligentInput
+  placeholder="GitHub URL 或代码..."
+  autoDetect={true}
+  onSubmit={async (value) =&gt; {
+    const type = detectInputType(value);
+    if (type === 'github-url') {
+      await fetchCodeFromGitHub(value);
+    }
+  }}
+/&gt;</code></pre>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🎨 视觉设计改进</h3>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题1：缺乏视觉层次</p>
+                        <p class="text-sm text-gray-600 mb-2">现状：三个变体的信息层级不够清晰</p>
+                        <p class="text-sm text-gray-600">改进：</p>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs"><code>/* 级别1: 代码（高对比度） */
+text-[#e6e6e6] bg-[#1e1e1e]
+
+/* 级别2: 审查结果（中等对比度） */
+text-[#d7dde5] bg-[#12161d]
+
+/* 级别3: 辅助信息（低对比度） */
+text-white/50</code></pre>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题2：状态指示不明显</p>
+                        <p class="text-sm text-gray-600 mb-2">改进方案：添加动态指示器</p>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs"><code>// 流式处理中：旋转图标
+{isBusy && <Loader2 className="animate-spin" />}
+
+// 状态徽章
+<StatusBadge status={isBusy ? 'streaming' : 'idle'} /></code></pre>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题3：颜色语义不清晰</p>
+                        <p class="text-sm text-gray-600 mb-2">改进：统一问题严重度颜色</p>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs"><code>const SEVERITY_COLORS = {
+  '🔴 High': 'bg-red-100 text-red-800 border-red-200',
+  '🟡 Medium': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  '🟢 Low': 'bg-green-100 text-green-800 border-green-200',
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🛠️ 功能改进</h3>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">改进1：代码编辑器增强</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono">
+                            <code>&lt;textarea&gt; → &lt;CodeEditor&gt;
+  ├─ 添加行号显示
+  ├─ 添加语法高亮
+  ├─ 添加行数统计
+  └─ 添加"从文件导入"按钮</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">改进2：审查结果结构化展示</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono overflow-x-auto">
+                            <code>{/* 当前：纯Markdown */}
+&lt;div className="prose"&gt;
+  {markdownContent}
+&lt;/div&gt;
+
+{/* 改进：结构化展示 */}
+&lt;div className="space-y-4"&gt;
+  {issues.map(issue =&gt; (
+    &lt;IssueCard
+      key={issue.id}
+      severity={issue.severity}
+      title={issue.title}
+      location={issue.line}
+      why={issue.description}
+      fix={issue.suggestion}
+    /&gt;
+  ))}
+&lt;/div&gt;</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">改进3：代码片段折叠</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono">
+                            <code>&lt;details className="group"&gt;
+  &lt;summary className="cursor-pointer hover:bg-gray-100"&gt;
+    展示修复代码...
+  &lt;/summary&gt;
+  &lt;pre&gt;&lt;code&gt;{fixedCode}&lt;/code&gt;&lt;/pre&gt;
+&lt;/details&gt;</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">改进4：复制与反馈</p>
+                        <ul class="list-disc list-inside text-sm text-gray-700 ml-2">
+                            <li>添加"复制审查结果"按钮</li>
+                            <li>添加"有用/无用"反馈按钮</li>
+                            <li>添加"导出为Markdown"功能</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📱 响应式设计</h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="font-semibold text-gray-800 mb-2">问题：Variant B在小屏幕下不可用</p>
+                    <div class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono">
+                        <code>// 改进：移动端切换为单列
+&lt;div className="grid lg:grid-cols-2 md:grid-cols-1"&gt;
+  &lt;EditorSection /&gt;
+  &lt;ReviewSection /&gt;
+&lt;/div&gt;
+
+// 或使用Tab切换
+&lt;Tabs&gt;
+  &lt;Tab label="代码"&gt;EditorSection&lt;/Tab&gt;
+  &lt;Tab label="审查结果"&gt;ReviewSection&lt;/Tab&gt;
+&lt;/Tabs&gt;</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🔧 用户体验改进</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-3">改进1：键盘快捷键</p>
+                        <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                            <li><code>Ctrl+Enter</code> / <code>Cmd+Enter</code>：提交审查</li>
+                            <li><code>Ctrl+L</code> / <code>Cmd+L</code>：清空输入</li>
+                            <li><code>Esc</code>：停止生成</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-3">改进2：空状态优化</p>
+                        <p class="text-sm text-gray-600">添加引导图标和说明文字，提升首次使用体验</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-3">改进3：流式动画增强</p>
+                        <p class="text-sm text-gray-700">使用Streamdown的高级特性，提升视觉体验</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-3">改进4：错误提示增强</p>
+                        <p class="text-sm text-gray-600">添加Toast提示，提供重试操作</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 数据展示改进</h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="font-semibold text-gray-800 mb-2">问题：当前没有统计信息</p>
+                    <div class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono">
+                        <code>&lt;ReviewStats
+  totalIssues={issues.length}
+  highSeverity={issues.filter(i =&gt; i.severity === 'High').length}
+  mediumSeverity={issues.filter(i =&gt; i.severity === 'Medium').length}
+  lowSeverity={issues.filter(i =&gt; i.severity === 'Low').length}
+  tokensUsed={messageMetadata.totalTokens}
+  duration={reviewDuration}
+/&gt;</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Review -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <span class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center text-red-600 font-bold">6</span>
+                代码审查
+            </h2>
+
+            <div class="card bg-green-50 border-green-200">
+                <h3 class="text-lg font-bold text-green-800 mb-4">✅ 优点</h3>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li><strong>架构清晰：</strong>前后端分离，组件化设计</li>
+                    <li><strong>技术选型合理：</strong>AI SDK v7、Next.js、TypeScript</li>
+                    <li><strong>原型丰富：</strong>三个UI变体提供了充分的设计选择</li>
+                    <li><strong>类型安全：</strong>完整的TypeScript类型定义</li>
+                    <li><strong>流式处理：</strong>用户体验流畅</li>
+                </ul>
+            </div>
+
+            <div class="card border-yellow-200">
+                <h3 class="text-lg font-bold text-yellow-800 mb-4">⚠️ 问题与建议</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题1：类型定义可以更严格</p>
+                        <p class="text-sm text-gray-600 mb-2">当前只是简单扩展，建议添加运行时验证</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono">
+                            <code>// 建议：添加运行时验证
+export const messageMetadataSchema = z.object({
+  createdAt: z.number().optional(),
+  model: z.enum(['gpt-5-mini', 'gpt-4o']).optional(),
+  totalTokens: z.number().min(0).optional(),
+});</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题2：错误处理不够完善</p>
+                        <p class="text-sm text-gray-600 mb-2">当前简单返回500，建议区分错误类型</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono">
+                            <code>if (error instanceof ZodError) {
+  return Response.json({ error: "Invalid request body" }, { status: 400 });
+}
+if (error.message.includes('API_KEY')) {
+  return Response.json({ error: "Authentication failed" }, { status: 401 });
+}</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题3：缺少输入验证</p>
+                        <p class="text-sm text-gray-600 mb-2">建议限制代码长度，验证请求体格式</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono">
+                            <code>const MAX_CODE_LENGTH = 100 * 1024; // 100KB
+
+if (messages.length === 0) {
+  return Response.json({ error: "No messages provided" }, { status: 400 });
+}
+
+const lastMessage = messages[messages.length - 1];
+if (lastMessage.parts.text.length > MAX_CODE_LENGTH) {
+  return Response.json({
+    error: `Code too long. Max ${MAX_CODE_LENGTH / 1024}KB allowed.`
+  }, { status: 413 });
+}</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题4：缺少请求限流</p>
+                        <p class="text-sm text-gray-600 mb-2">建议添加简单的限流保护</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono">
+                            <code>import { rateLimit } from './utils/rate-limit';
+
+export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') || 'unknown';
+  if (!rateLimit(ip, { windowMs: 60_000, max: 10 })) {
+    return Response.json({ error: "Too many requests" }, { status: 429 });
+  }
+  // ... rest of the handler
+}</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题5：PrototypeSwitcher可能影响生产环境</p>
+                        <p class="text-sm text-gray-600 mb-2">建议只在开发环境显示</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono">
+                            <code>{process.env.NODE_ENV === 'development' &amp;&amp; (
+  &lt;PrototypeSwitcher variants={VARIANTS} current={variant} /&gt;
+)}</code>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="font-semibold text-gray-800 mb-2">问题6：固定的模型选择</p>
+                        <p class="text-sm text-gray-600 mb-2">建议添加降级策略</p>
+                        <div class="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono">
+                            <code>const model = process.env.AI_MODEL ??
+  (process.env.AI_GATEWAY_API_KEY ? "openai/gpt-5-mini" : "anthropic/claude-3-7-sonnet");</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Roadmap -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <span class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold">7</span>
+                实施路线图
+            </h2>
+
+            <!-- Phase 1 -->
+            <div class="card border-l-4 border-green-500">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">Phase 1</span>
+                    <h3 class="text-xl font-bold text-gray-900">核心功能 + GitHub集成 (MVP)</h3>
+                    <span class="text-sm text-gray-500">1-2周</span>
+                </div>
+                <ol class="list-decimal list-inside text-gray-700 space-y-2">
+                    <li class="font-semibold">✅ 实现流式API（已完成）</li>
+                    <li class="font-semibold text-blue-600">🔴 实现 GitHub URL 检测与拉取（优先）</li>
+                    <li>添加输入类型判断（GitHub URL vs Raw Code）</li>
+                    <li>调用 GitHub REST API 获取代码内容</li>
+                    <li>支持三种URL格式：Repo / File / PR</li>
+                    <li>完成API层错误处理（GitHub API错误 + AI错误）</li>
+                    <li>添加输入验证（URL格式、代码长度限制）</li>
+                    <li>UI调整：输入框改为URL优先模式</li>
+                    <li>加载状态：显示"正在从GitHub拉取代码..."</li>
+                    <li>选择UI变体（推荐Variant B）</li>
+                    <li>响应式适配</li>
+                </ol>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="card border-l-4 border-blue-500">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">Phase 2</span>
+                    <h3 class="text-xl font-bold text-gray-900">体验优化</h3>
+                    <span class="text-sm text-gray-500">2-3周</span>
+                </div>
+                <ol class="list-decimal list-inside text-gray-700 space-y-2">
+                    <li>代码编辑器增强（行号、语法高亮）</li>
+                    <li>结构化问题展示（IssueCard组件）</li>
+                    <li>代码折叠与复制</li>
+                    <li>键盘快捷键（Cmd+Enter提交）</li>
+                    <li>空状态优化（显示示例GitHub链接）</li>
+                    <li>GitHub token配置（提高API限额）</li>
+                    <li>批量审查PR文件（未来增强）</li>
+                </ol>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="card border-l-4 border-purple-500">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">Phase 3</span>
+                    <h3 class="text-xl font-bold text-gray-900">高级功能</h3>
+                    <span class="text-sm text-gray-500">1-2月</span>
+                </div>
+                <ol class="list-decimal list-inside text-gray-700 space-y-2">
+                    <li>问题过滤功能（只看High/Medium/Low）</li>
+                    <li>支持私有仓库（GitHub OAuth授权）</li>
+                    <li>批量审查（多文件/多PR）</li>
+                    <li>历史记录（localStorage或API）</li>
+                    <li>导出功能（Markdown/PDF）</li>
+                    <li>用户反馈收集</li>
+                    <li>IDE插件集成（VS Code / Cursor）</li>
+                    <li>PR Review Bot（GitHub Actions集成）</li>
+                </ol>
+            </div>
+
+            <!-- 快速开始指南 -->
+            <div class="card mt-6 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                <h3 class="text-lg font-bold text-green-800 mb-4">🚀 快速开始：GitHub URL实现步骤</h3>
+                <ol class="list-decimal list-inside text-gray-700 space-y-3">
+                    <li>
+                        <strong>创建 GitHub API 工具函数</strong>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono"><code>// lib/github.ts
+export async function fetchGitHubCode(url: string): Promise&lt;string&gt; {
+  // 处理各种GitHub URL格式
+  // 调用API并返回代码内容
+}</code></pre>
+                    </li>
+                    <li>
+                        <strong>修改 API Route 支持双输入</strong>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono"><code>// app/api/review/route.ts
+const { input } = await req.json();
+const isUrl = input.startsWith('http');
+const code = isUrl ? await fetchGitHubCode(input) : input;
+// 继续流式审查</code></pre>
+                    </li>
+                    <li>
+                        <strong>更新前端输入框</strong>
+                        <pre class="bg-gray-900 text-gray-100 p-3 rounded mt-2 text-xs font-mono"><code>&lt;input
+  placeholder="GitHub URL 或代码..."
+  onSubmit={handleSubmit}
+/&gt;</code></pre>
+                    </li>
+                    <li>
+                        <strong>测试与调优</strong>
+                        <p class="text-sm text-gray-600 ml-6">使用真实GitHub链接测试，验证错误处理和加载状态</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <span class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white font-bold">8</span>
+                总结与评价
+            </h2>
+
+            <div class="card bg-gradient-to-r from-blue-50 to-purple-50 border-0">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="text-5xl font-bold text-gray-900">8.5</div>
+                    <div>
+                        <div class="text-2xl font-semibold text-gray-700">/ 10</div>
+                        <div class="text-sm text-gray-600">总体评分</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-green-700 mb-3">✅ 优势</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2 text-sm">
+                            <li>原型设计优秀，提供多种选择</li>
+                            <li>技术架构现代化，易于扩展</li>
+                            <li>AI SDK v7使用正确</li>
+                            <li>代码结构清晰，可维护性高</li>
+                            <li><strong>GitHub URL方案</strong>直击真实痛点</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-yellow-700 mb-3">⚠️ 改进空间</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2 text-sm">
+                            <li>错误处理需要完善</li>
+                            <li>输入验证需要加强</li>
+                            <li>UI需要更多细节打磨</li>
+                            <li>GitHub API限额需要管理</li>
+                            <li>生产环境优化（限流、监控）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-6 bg-gradient-to-r from-blue-50 to-purple-50 border-0">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">🎯 核心决策与建议</h3>
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg p-4">
+                        <p class="font-bold text-gray-800 mb-2">🔴 关键决策：GitHub URL方案</p>
+                        <p class="text-sm text-gray-600">
+                            从"粘贴代码"转向"输入GitHub链接"，符合真实开发者工作流，大幅提升易用性。
+                        </p>
+                    </div>
+                    <ol class="list-decimal list-inside text-gray-700 space-y-2">
+                        <li><strong>立即执行（1-2周）：</strong>实现GitHub URL集成、错误处理、输入验证、UI定型</li>
+                        <li><strong>短期优化（2-3周）：</strong>代码编辑器增强、结构化展示、快捷键、空状态优化</li>
+                        <li><strong>中期规划（1-2月）：</strong>问题过滤、私有仓库支持、历史记录、IDE插件集成</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card mt-6 bg-gray-900 text-white">
+                <h3 class="text-lg font-bold mb-4">💡 下一步行动</h3>
+                <ol class="list-decimal list-inside space-y-3">
+                    <li><strong>第1步：</strong>创建 <code class="bg-gray-800 px-2 py-0.5 rounded">lib/github.ts</code> 实现 GitHub API 调用</li>
+                    <li><strong>第2步：</strong>修改 <code class="bg-gray-800 px-2 py-0.5 rounded">api/review/route.ts</code> 支持双输入类型</li>
+                    <li><strong>第3步：</strong>更新前端输入框，改为URL优先模式</li>
+                    <li><strong>第4步：</strong>使用真实GitHub链接测试验证</li>
+                    <li><strong>第5步：</strong>完善错误处理和加载状态</li>
+                </ol>
+                <p class="mt-4 text-sm text-gray-400">预计实现时间：3-5天</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t text-center text-gray-500">
+            <p class="mb-2">📝 Code Review Agent - 项目审查报告</p>
+            <p class="text-sm">文档版本 v1.0 · 更新日期 2026-11-09</p>
+        </footer>
+    </div>
+</body>
+</html>

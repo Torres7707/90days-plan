@@ -42,9 +42,7 @@ export default function Chat() {
     useChat<UIMessage<never, never, WeatherTools>>();
 
   const isLoading = status === "streaming" || status === "submitted";
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+
   return (
     <div className="flex flex-col h-screen">
       <Conversation>
