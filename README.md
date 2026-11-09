@@ -1,29 +1,30 @@
 # 90 Days — React → AI Agent Front-End
 
-I'm Torres, a React developer. This repo documents my 90-day plan (22 Oct 2026 – 19 Jan 2027) to become an AI agent front-end developer — building real AI apps with streaming, tool calling, structured output, and evals, not just following tutorials.
+I'm Torres, a React developer. This repo documents my 90-day plan (22 Oct 2026 – 19 Jan 2027) to become an AI application front-end developer — building a real AI agent with streaming, structured output, tool calling, evals, a Skill and an MCP server, not just following tutorials.
 
 **Goal:** by Day 90, independently ship one genuinely usable AI app, and be able to explain how it's designed, how it handles errors, how it controls cost, and how its answers are verified.
 
 ## Projects
 
-| Folder | What it is | Status |
+| Where | What it is | Status |
 | --- | --- | --- |
-| `phase-1-starter/` | Streaming support chatbot (Acme Store) built with Next.js + Vercel AI SDK. Three Zod-typed tools: order lookup, help-docs search, and support-ticket creation. | In progress — Phase 1 |
-| `trace/` | **Trace** — AI daily-review assistant (the main project). Log activities and feelings; AI generates structured weekly reports with evidence-based suggestions, and says so when the data is insufficient. | Planned — starts in Phase 2 |
+| [code-review-agent](https://github.com/Torres7707/code-review-agent) | **The main project.** A React code-review agent built with Next.js + AI SDK 7: streaming reviews, structured review cards (Zod), tool calling, an eval set, then real GitHub PR reviews, a review Skill and a TypeScript MCP server. | In progress — Phase 1 |
+| `phase-1-starter/` | Streaming support chatbot (Acme Store) built with Next.js + Vercel AI SDK. Three Zod-typed tools: order lookup, help-docs search, and support-ticket creation. | Done — Week 1 warm-up |
+| `ai-sdk-fundamentals-starter/` | Exercises from Vercel's AI SDK course. | Done — Week 1 |
+| `ts-exercise/` | Small TypeScript type exercises. | Ongoing |
+| `notes/` | Study notes (agents, skills, harness engineering, code review). | Ongoing |
 
-More small experiments will be added as their own folders as the plan progresses.
+## The plan (v2)
 
-## The plan
-
-- **Phase 1 (22 Oct – 20 Nov 2026) — Make an AI app actually run.** LLM basics, model calls, streaming / stop / errors / retry, tool calling with Zod, API routes, data persistence, env vars, input validation — plus a fixed set of 5–10 eval questions from Week 1.
-- **Phase 2 (21 Nov – 20 Dec 2026) — From chatbot to AI app.** Structured output, generative UI, chat history with basic auth, RAG where it's genuinely needed, and a small MCP experiment. Deliverable: Trace v1.
-- **Phase 3 (21 Dec 2026 – 19 Jan 2027) — Engineering reliability.** Eval suite, timeouts and rate limits, prompt-injection safety, token / latency / cost logging, data protection, deployment, demo video, and written-ups of one technical decision and one failure case.
+- **Phase 1 (22 Oct – 22 Nov 2026, Weeks 1–4) — Basics, streaming UI, structured output, tool loop.** AI SDK 7 basics, `useChat` streaming UI with cancel on both ends, Zod structured review cards, a first eval set (recall / false-positive rate), tool calling and the agent loop.
+- **Phase 2 (23 Nov – 20 Dec 2026, Weeks 5–8) — Real PRs, Skill, MCP.** Review real GitHub PRs (including large diffs), write a review Skill and a TypeScript MCP server and use them in Claude Code / Cursor; Postgres history if time allows.
+- **Phase 3 (21 Dec 2026 – 19 Jan 2027, Weeks 9–12) — Reliability and release.** Background runs with human approval (optional), rendering performance and trace visualisation, prompt-injection / timeout / cost control and tests, then deploy, demo video, bilingual README and resume update.
 
 ## How I learn
 
-Every topic follows the same loop: **Watch** (one focused tutorial) → **Close** (rebuild it from an empty file, no tutorial) → **Break** (make it fail on purpose, then fix it) → **Use** (integrate it into a project and commit) → **Explain** (write up the design, the alternatives, and the failure points). A topic only counts as learned when I can debug it and explain it — not when AI generates it for me.
+Every topic follows the same loop: **Watch** (one focused tutorial) → **Use** (build it into the code-review agent and commit) → **Break** (make it fail on purpose, then fix it) → **Explain** (write up the design, the alternatives, and the failure points). A topic counts as learned when I can predict what a change will do, debug it from a symptom, apply it to a new case, and explain it in my own words — not when I can retype it from memory, and not when AI generates it for me.
 
-Pace: 5–6 hours a week — two short weekday sessions, one weekend build, and a 15-minute weekly review.
+Pace: at least 6 hours a week. Saturday is family day — no study.
 
 ## Run the starter
 
