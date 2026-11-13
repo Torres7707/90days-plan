@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-11-13 学习笔记：结构化输出有效不等于内容正确</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: #fffdf8;
+      --ink: #1c1916;
+      --muted: #5c564e;
+      --line: #d8cfc2;
+      --accent: #8b3a2a;
+      --ok: #1f5a3d;
+      --warn: #8a5a10;
+      --cost: #7a1f2b;
+      --chip: #efe7db;
+      --code-bg: #f3ece2;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "Times New Roman", serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    .wrap {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 1.25rem 1.1rem 4rem;
+    }
+    header.hero {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-size: 1.65rem;
+      line-height: 1.3;
+      margin: 0 0 0.6rem;
+    }
+    h2 {
+      font-size: 1.3rem;
+      margin: 2.2rem 0 0.8rem;
+      padding-top: 0.4rem;
+      border-top: 1px solid var(--line);
+    }
+    h3 { font-size: 1.08rem; margin: 1.5rem 0 0.5rem; }
+    h4 { font-size: 1rem; margin: 1.2rem 0 0.4rem; }
+    p { margin: 0.7rem 0; }
+    a { color: var(--accent); }
+    .meta, .muted { color: var(--muted); }
+    .meta { font-size: 0.92rem; }
+    nav.toc {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin: 1rem 0 1.5rem;
+    }
+    nav.toc ol { margin: 0.3rem 0 0; padding-left: 1.3rem; }
+    nav.toc li { margin: 0.2rem 0; }
+    .callout {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin: 1rem 0;
+    }
+    .callout.ok { border-left-color: var(--ok); }
+    .callout.warn { border-left-color: var(--warn); }
+    .callout.cost { border-left-color: var(--cost); }
+    .callout strong.label {
+      display: inline-block;
+      margin-right: 0.3rem;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0 1rem; }
+    .chip {
+      background: var(--chip);
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.85rem;
+    }
+    .chip.done { color: var(--ok); }
+    .chip.todo { color: var(--warn); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin: 0.8rem 0 1.1rem;
+      background: var(--paper);
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.45rem 0.55rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--chip); }
+    pre, code {
+      font-family: "Source Han Mono SC", "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.86rem;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.8rem 0.9rem;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+    code { background: var(--code-bg); padding: 0.05rem 0.28rem; border-radius: 4px; }
+    pre code { background: none; padding: 0; }
+    figure.flow {
+      margin: 1rem 0 1.2rem;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.7rem 0.6rem 0.3rem;
+    }
+    figure.flow svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 40rem;
+      margin: 0 auto;
+    }
+    figcaption, .sr-flow {
+      color: var(--muted);
+      font-size: 0.92rem;
+      padding: 0.4rem 0.4rem 0.8rem;
+    }
+    .sr-flow ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+    .file-map code { white-space: nowrap; }
+    .cmd-grid td:first-child { white-space: nowrap; }
+    @media (max-width: 640px) {
+      body { font-size: 16px; }
+      h1 { font-size: 1.4rem; }
+      table, .cmd-grid td:first-child { white-space: normal; }
+      .wrap { padding: 1rem 0.8rem 3rem; }
+    }
+    @media print {
+      body { background: #fff; }
+      .wrap { max-width: none; padding: 0; }
+      nav.toc { break-inside: avoid; }
+      figure.flow, .callout, table, pre { break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+      a[href^="#"]::after { content: ""; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="meta">90 天计划 · 第 3 周练习笔记 · 2026-11-13（北京时间）</p>
+      <h1>结构化输出有效，不等于评审内容正确</h1>
+      <p>今天真正要看清的不是又多写了几个脚本，而是一条贯穿全程的机制：模型按 Zod schema 吐出一个能 parse 的对象，只说明「形状合法」。它有没有报出问题、报的是不是该报的问题，是两件不同的事。评测如果把前者当成后者，数字会很好看，也完全不能用。</p>
+      <p class="meta">这份笔记对应本地仓库里的练习目录 <code>week3-cards-and-evals</code>，以 2026-11-13 当晚的代码为准。它是学习笔记，不是完成证明；助手改过的辅助判分，也不等于这些机制已经被你掌握。内容里的贯穿例子都标明「教学示例」，不是某次真实跑分，也没有虚构分数。</p>
+    </header>
+
+    <nav class="toc" aria-label="目录">
+      <strong>目录</strong>
+      <ol>
+        <li><a href="#goal">本周真正目标</a></li>
+        <li><a href="#map">项目文件地图与每一步的衔接</a></li>
+        <li><a href="#flow-global">全局数据流</a></li>
+        <li><a href="#step2">第 2 步：流式卡片（终端，路径 A）</a></li>
+        <li><a href="#step3">第 3 步：24 条评测用例</a></li>
+        <li><a href="#step4">第 4 步：批量评测怎么跑</a></li>
+        <li><a href="#flow-eval">评测循环与统计流程</a></li>
+        <li><a href="#judge">从关键词判对到「只看有没有报」</a></li>
+        <li><a href="#stats">统计口径：用例级、运行级，以及旧错误</a></li>
+        <li><a href="#case">贯穿教学示例与四象限</a></li>
+        <li><a href="#commands">命令、是否打模型和费用</a></li>
+        <li><a href="#status">已经完成、仍未完成、已知问题</a></li>
+        <li><a href="#pitfalls">今天容易混在一起的点</a></li>
+      </ol>
+    </nav>
+
+    <section id="goal">
+      <h2>1. 本周真正目标</h2>
+      <p>第 3 周要做的，是把「一大段文字评审」变成一张张结构化问题卡片，再用一组固定用例去衡量提示词好不好。指南里的四步是连在一起的：</p>
+      <ol>
+        <li><strong>第 2 步</strong>：流式渲染结构化结果。本练习走的是路径 A：<code>streamText</code> + <code>Output.object({ schema })</code> + <code>partialOutputStream</code>。渲染发生在<strong>终端里的文本格式化</strong>，不是真正的网页 UI，也没有用 <code>useObject</code>。</li>
+        <li><strong>第 3 步</strong>：准备 24 条用例，12 条 <code>find</code>（应报出问题）、12 条 <code>clean</code>（不应乱报），写在 <code>evals/cases.json</code>。</li>
+        <li><strong>第 4 步</strong>：批量脚本对每条用例调用 <code>generateText</code> 跑 3 次，再汇总。当前自动统计的是「有没有报问题」，不是「报得对不对」。</li>
+        <li><strong>第 5 步</strong>：用 <code>MockLanguageModelV4</code> 和 <code>simulateReadableStream</code> 做不花钱的离线测试。<strong>这一步还没写完</strong>。</li>
+      </ol>
+      <div class="callout">
+        <p><strong>框架先放在这里：</strong>schema 校验成功，只保证对象长得像评审结果。它不能保证模型找对了 bug，也不能保证 <code>clean</code> 用例真的无问题。自动脚本能稳健完成的，是「报没报」；「报没报对」要靠人工对照原文。如果把前者叫做召回率，后续改提示词时就会改错方向。</p>
+      </div>
+    </section>
+
+    <section id="map">
+      <h2>2. 项目文件地图与每一步的衔接</h2>
+      <p>练习在 <code>week3-cards-and-evals/</code>，和上一份 <code>week3-structured-output</code>（第 1 步实验）以及主项目 <code>code-review-agent</code> 分开。下面按「谁把什么交给谁」看，而不是按文件名背清单。</p>
+      <table class="file-map">
+        <thead>
+          <tr><th>步骤</th><th>输入</th><th>处理</th><th>输出</th><th>交给下一步</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>共用结构</td>
+            <td>字段约定：问题、原因、建议、严重程度、行号</td>
+            <td><code>src/schema.ts</code> 里的 <code>reviewSchema</code> / <code>PartialReview</code></td>
+            <td>完整对象或流式过程中的不完整对象</td>
+            <td>第 2、4 步都用同一份 schema</td>
+          </tr>
+          <tr>
+            <td>第 2 步离线</td>
+            <td><code>fixtures/partial-review-stream.json</code> 的 8 帧快照</td>
+            <td><code>src/step2-preview.ts</code> 逐帧调用 <code>renderPartialReview</code></td>
+            <td>终端里一张张「未完成 → 逐渐完整」的卡片</td>
+            <td>先练容错渲染，不消耗额度</td>
+          </tr>
+          <tr>
+            <td>第 2 步接模型</td>
+            <td><code>src/sample-code.ts</code> + <code>buildReviewPrompt</code></td>
+            <td><code>src/step2-stream.ts</code> 读 <code>partialOutputStream</code>，循环结束后再 <code>await result.output</code></td>
+            <td>流式帧 + 一次最终渲染</td>
+            <td>确认「最后一张未完时，前面已可读」</td>
+          </tr>
+          <tr>
+            <td>第 3 步</td>
+            <td>公开、非公司代码的 React 片段</td>
+            <td><code>evals/cases.json</code> 用 <code>evals/case-schema.ts</code> 约束；<code>scripts/check-cases.ts</code> 计数</td>
+            <td>24 条，12/12，find 带 keywords</td>
+            <td>keywords 只供人看，不进提示词</td>
+          </tr>
+          <tr>
+            <td>第 4 步</td>
+            <td>选中的用例 + 同一 schema + 同一提示词版本</td>
+            <td><code>scripts/eval.ts</code> 每条 3 次 <code>reviewOnce</code>；<code>src/match.ts</code> 只判断有没有 issue</td>
+            <td>逐条原文、待核对、用例级/运行级比率；并把结果写成 JSON</td>
+            <td>这些比率还不能当「改提示词是否更好」的最终证据</td>
+          </tr>
+          <tr>
+            <td>第 5 步</td>
+            <td>同一套 schema / 渲染 / 判定</td>
+            <td><code>tests/mock-model.ts</code>（当前仍是 TODO）</td>
+            <td>应当在断网时也能跑通</td>
+            <td>还没接到评测脚本上</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>和模型相关的接线：评测和流式脚本实际用的是 <code>model/index.ts</code> 在模块加载时创建的客户端。<code>src/model.ts</code> 里的 <code>getModel()</code> 有更明确的缺配置检查，但当前这两条路径没有走它。<code>src/prompts.ts</code> 只把代码放进提示词，不把 <code>expect</code> 或 <code>keywords</code> 交给模型。</p>
+    </section>
+
+    <section id="flow-global">
+      <h2>3. 全局数据流</h2>
+      <figure class="flow">
+        <svg viewBox="0 0 640 520" role="img" aria-labelledby="global-title global-desc">
+          <title id="global-title">第 3 周练习的全局数据流</title>
+          <desc id="global-desc">用例或示例代码先进入提示词和 Zod schema，再分成三条路：离线夹具预览、流式生成、批量 generateText。前两条走向部分对象和终端渲染，后一条走向完整对象、是否报出问题、人工核对与统计。</desc>
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <polygon points="0,0 6,3 0,6" fill="#5c564e"/>
+            </marker>
+          </defs>
+          <rect x="40" y="16" width="260" height="52" rx="8" fill="#efe7db" stroke="#8b3a2a"/>
+          <text x="170" y="38" text-anchor="middle" font-size="14" fill="#1c1916">用例 / 示例代码</text>
+          <text x="170" y="56" text-anchor="middle" font-size="11" fill="#5c564e">cases.json 或 sample-code.ts</text>
+
+          <rect x="340" y="16" width="260" height="52" rx="8" fill="#efe7db" stroke="#8b3a2a"/>
+          <text x="470" y="38" text-anchor="middle" font-size="14" fill="#1c1916">提示词 + reviewSchema</text>
+          <text x="470" y="56" text-anchor="middle" font-size="11" fill="#5c564e">不传入 expect / keywords</text>
+
+          <line x1="300" y1="42" x2="340" y2="42" stroke="#5c564e" marker-end="url(#arrow)"/>
+
+          <line x1="170" y1="68" x2="170" y2="108" stroke="#5c564e" marker-end="url(#arrow)"/>
+          <line x1="470" y1="68" x2="470" y2="108" stroke="#5c564e"/>
+          <line x1="170" y1="108" x2="470" y2="108" stroke="#5c564e"/>
+
+          <rect x="20" y="130" width="190" height="70" rx="8" fill="#fffdf8" stroke="#5c564e"/>
+          <text x="115" y="158" text-anchor="middle" font-size="13" fill="#1c1916">离线夹具预览</text>
+          <text x="115" y="178" text-anchor="middle" font-size="11" fill="#5c564e">step2-preview · 不打模型</text>
+
+          <rect x="225" y="130" width="190" height="70" rx="8" fill="#fffdf8" stroke="#5c564e"/>
+          <text x="320" y="158" text-anchor="middle" font-size="13" fill="#1c1916">streamText 路径 A</text>
+          <text x="320" y="178" text-anchor="middle" font-size="11" fill="#5c564e">partialOutputStream</text>
+
+          <rect x="430" y="130" width="190" height="70" rx="8" fill="#fffdf8" stroke="#5c564e"/>
+          <text x="525" y="158" text-anchor="middle" font-size="13" fill="#1c1916">generateText 评测</text>
+          <text x="525" y="178" text-anchor="middle" font-size="11" fill="#5c564e">每条用例 3 次</text>
+
+          <line x1="115" y1="200" x2="115" y2="236" stroke="#5c564e" marker-end="url(#arrow)"/>
+          <line x1="320" y1="200" x2="320" y2="236" stroke="#5c564e" marker-end="url(#arrow)"/>
+          <line x1="525" y1="200" x2="525" y2="236" stroke="#5c564e" marker-end="url(#arrow)"/>
+
+          <rect x="20" y="240" width="395" height="70" rx="8" fill="#efe7db" stroke="#1f5a3d"/>
+          <text x="218" y="268" text-anchor="middle" font-size="13" fill="#1c1916">PartialReview（字段可能还是 undefined）</text>
+          <text x="218" y="288" text-anchor="middle" font-size="11" fill="#5c564e">renderPartialReview · 终端卡片，不是网页 UI</text>
+
+          <rect x="430" y="240" width="190" height="70" rx="8" fill="#efe7db" stroke="#1f5a3d"/>
+          <text x="525" y="268" text-anchor="middle" font-size="13" fill="#1c1916">完整 Review</text>
+          <text x="525" y="288" text-anchor="middle" font-size="11" fill="#5c564e">schema 合法 ≠ 内容正确</text>
+
+          <line x1="525" y1="310" x2="525" y2="348" stroke="#5c564e" marker-end="url(#arrow)"/>
+          <rect x="430" y="350" width="190" height="70" rx="8" fill="#fffdf8" stroke="#5c564e"/>
+          <text x="525" y="378" text-anchor="middle" font-size="13" fill="#1c1916">hasReportedIssue</text>
+          <text x="525" y="398" text-anchor="middle" font-size="11" fill="#5c564e">只看 issues.length &gt; 0</text>
+
+          <line x1="525" y1="420" x2="525" y2="456" stroke="#5c564e" marker-end="url(#arrow)"/>
+          <rect x="200" y="458" width="420" height="50" rx="8" fill="#fffdf8" stroke="#8a5a10"/>
+          <text x="410" y="488" text-anchor="middle" font-size="13" fill="#1c1916">报出率 / 误报率 + 人工「待核对」+ 结果 JSON</text>
+        </svg>
+        <div class="sr-flow">
+          <strong>文字版：</strong>
+          <ol>
+            <li>用例或示例代码进入 <code>buildReviewPrompt</code> 和 <code>reviewSchema</code>。<code>expect</code> 与 <code>keywords</code> 不进提示词。</li>
+            <li>三条路径：离线夹具预览（不打模型）、<code>streamText</code> 的部分对象流、评测用的 <code>generateText</code>（每条 3 次）。</li>
+            <li>前两条走到 <code>PartialReview</code> 和终端渲染；评测走到完整 <code>Review</code>。</li>
+            <li>程序只用 <code>hasReportedIssue</code> 看有没有报问题，再输出待核对的原文和两类统计，并把结果写成 JSON。</li>
+          </ol>
+        </div>
+      </figure>
+    </section>
+
+    <section id="step2">
+      <h2>4. 第 2 步：流式卡片（终端，路径 A）</h2>
+      <p>流式结构化输出的核心机制是：对象不是等全部生成完才出现，而是一帧帧变长。某一帧里，<code>issues</code> 可能还是 <code>undefined</code>，某一张卡可能只有 <code>title</code>，<code>severity</code> 仍是 <code>undefined</code>。所以渲染必须容错：缺字段时用占位，不能把 <code>"undefined"</code> 印出来；卡片编号用数组下标，不能用可能还没生成完的 <code>title</code> 当编号。</p>
+
+      <h3>当前已经实现的</h3>
+      <p><code>src/render-partial.ts</code> 用 <code>?? "生成中..."</code> 给缺字段占位，并用 <code>问题#${i + 1}</code> 编号。它还接收第二个参数 <code>isFinal</code>（默认 <code>false</code>）：流式过程中空数组显示「卡片生成中...」；若调用方声明这是最终结果且 <code>issues</code> 为空，则显示「没有问题」。</p>
+      <pre><code>export function renderPartialReview(partial: PartialReview, isFinal: boolean = false): string {
+  const {issues} = partial;
+  if (!issues||issues.length === 0 &amp;&amp; !isFinal) {
+    return `卡片生成中...`;
+  } else if (issues.length === 0 &amp;&amp; isFinal) {
+    return `没有问题`;
+  }
+  // ... title??"生成中..." 等
+}</code></pre>
+      <p><code>src/step2-stream.ts</code> 在 <code>for await (const partial of result.partialOutputStream)</code> 里按帧渲染（此时不传 <code>isFinal</code>，默认还在生成）。循环正常结束后，再 <code>const finalReview = await result.output</code>，并调用 <code>renderPartialReview(finalReview, true)</code>。这正是关键分工：<strong>render 函数自己不知道流结束了没有，结束态要由调用方提供。</strong></p>
+
+      <h3>建议，尚未完全做到的</h3>
+      <div class="callout warn">
+        <p><strong>不要把下面写成「已经修完」。这是对照当前实现后的说明。</strong></p>
+        <ul>
+          <li><code>renderPartialReview</code> 里判断写成了 <code>!issues||issues.length === 0 &amp;&amp; !isFinal</code>。<code>&amp;&amp;</code> 先于 <code>||</code> 运算，所以当 <code>issues</code> 还是 <code>undefined</code> 且 <code>isFinal === true</code> 时，会因为 <code>!issues</code> 为真而仍显示「卡片生成中...」，进不了「没有问题」分支。正常的最终 <code>result.output</code> 若通过 schema，<code>issues</code> 应是数组，常见终态不受影响；这是边角，不是「已经完美区分」。</li>
+          <li><code>src/step2-preview.ts</code> 回放夹具时没有在全部帧结束后再用 <code>isFinal: true</code> 渲染一次。当前夹具最后一帧本身有问题卡片，所以预览看起来没问题；若最后一帧是空数组，仍会像还在生成。</li>
+          <li>评测脚本已经对单次失败做了记录并继续往下跑。但 <code>src/step2-stream.ts</code> 循环外的 <code>await result.output</code> 仍未包 <code>try/catch</code>：若最终对象校验失败，流式脚本还是会中断。无论哪条路径，失败都不能当成 <code>issues: []</code> 的 clean。</li>
+        </ul>
+      </div>
+      <p>文件头里还有「写完 TODO 之前不会调用模型」的旧说明，和现在已经接上 <code>streamText</code> 的事实不一致，以代码为准。</p>
+    </section>
+
+    <section id="step3">
+      <h2>5. 第 3 步：24 条评测用例</h2>
+      <p>当前 <code>evals/cases.json</code> 是 24 条、12 条 find / 12 条 clean，id 不重复，find 都有 <code>keywords</code>。<code>scripts/check-cases.ts</code> 只检查数量、标注和格式，不调用模型。</p>
+      <p>今天补齐了这 24 条。笔记不把「全部用例都是你从零手写」当成事实：来源可能参考了公开测试（例如 eslint-plugin-react-hooks 的 MIT 用例），这一点不确定。重要的是用例角色：它们是固定的尺子，用来以后对比提示词，而不是让程序用 keywords 自动宣布「找对了」。</p>
+    </section>
+
+    <section id="step4">
+      <h2>6. 第 4 步：批量评测怎么跑</h2>
+      <p>把 <code>scripts/eval.ts</code> 想成一条管道，而不是一堆命令。每一段都有自己的职责。</p>
+      <table>
+        <thead><tr><th>环节</th><th>做什么</th></tr></thead>
+        <tbody>
+          <tr><td><code>process.argv.slice(2)</code></td><td>只看传给脚本的参数，不包含 node / tsx / 文件名。例如 <code>pnpm eval</code> 时这里通常是空数组。</td></tr>
+          <tr><td><code>parseArgs</code></td><td>有没有出现独立参数 <code>--run</code>；若有独立参数 <code>--limit</code>，再读<strong>它后面那一个</strong>参数当条数。</td></tr>
+          <tr><td><code>loadCases</code></td><td>读 <code>evals/cases.json</code>，先 <code>JSON.parse</code> 再交给 Zod 的 <code>evalCasesSchema</code>。形状不对会在进模型前失败。</td></tr>
+          <tr><td><code>selected</code></td><td><code>limit</code> 为空则用全部用例，否则 <code>cases.slice(0, limit)</code>，只取从开头数的前 n 条。</td></tr>
+          <tr><td><code>run === false</code></td><td>打印已加载条数后直接 <code>return</code>。不调用 <code>reviewOnce</code>，不写结果文件。这是默认的安全档。</td></tr>
+          <tr><td><code>reviewOnce</code></td><td>对单条用例调用一次 <code>generateText</code>，<code>output: Output.object({ schema: reviewSchema })</code>，提示词只有代码。返回值是联合类型：成功带上 <code>review</code>，失败带上 <code>error</code>。</td></tr>
+          <tr><td><code>result.output</code></td><td>取完整结构化结果。当前用 <code>try/catch</code> 接住校验失败或抛错；<code>output</code> 为空也记为失败，然后继续跑后面的次数和用例。</td></tr>
+          <tr><td>判定与汇总</td><td>只把成功次数交给 <code>hasReportedIssue</code> 和统计；失败另栏列出，「未计入报出率」，也不会当成 clean。最后把 <code>promptVersion</code>、<code>date</code> 和全部 <code>attempts</code>（含失败）写成 <code>results/results-*.json</code>。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>为什么默认是 <code>--run === false</code></h3>
+      <p><code>parseArgs</code> 用的是 <code>argv.includes("--run")</code>。只有参数列表里真的出现这个标记，才会进入评测循环。<code>package.json</code> 里 <code>pnpm eval</code> 只执行 <code>tsx scripts/eval.ts</code>，没有带 <code>--run</code>，所以 <code>run</code> 为 <code>false</code>，不会打模型。真正评测要用 <code>pnpm eval:run</code>，它已经在脚本里写上了 <code>--run</code>。</p>
+
+      <h3><code>--limit</code> 怎么写才有效</h3>
+      <p>当前 <code>parseArgs</code> <strong>只认空格分开的</strong> <code>--limit 1</code>，也就是 <code>--limit</code> 后面跟一个单独的 <code>1</code>。它<strong>不支持</strong> <code>--limit=1</code>：代码用 <code>indexOf("--limit")</code> 找的是完整参数，找不到就把 <code>limit</code> 当成「未设置」，结果会跑全部 24 条。文件头注释里若仍写着 <code>pnpm eval:run -- --limit=1</code>，那是过时写法，以代码为准。</p>
+      <div class="callout ok">
+        <p><strong>一条安全、且和当前 parseArgs 一致的命令：</strong></p>
+        <pre><code>pnpm eval:run -- --limit 1</code></pre>
+        <p>中间的 <code>--</code> 是把后面的参数交给脚本，而不是交给 pnpm。这只会选中第 1 条用例，再重复 3 次，共 3 次模型调用。先这样确认通了，再考虑去掉 <code>--limit</code> 做全量。</p>
+      </div>
+    </section>
+
+    <section id="flow-eval">
+      <h2>7. 评测循环与统计流程</h2>
+      <figure class="flow">
+        <svg viewBox="0 0 640 640" role="img" aria-labelledby="eval-title eval-desc">
+          <title id="eval-title">评测脚本从参数到统计与人工核对的流程</title>
+          <desc id="eval-desc">先解析参数。没有 --run 就结束。否则加载并校验用例，按 limit 截取，对每条用例串行调用三次 reviewOnce。每次看有没有报问题并留下原文。全部成功后做用例级和运行级统计，标待核对，再写 JSON。单次失败会记录后继续，不中断整轮。</desc>
+          <defs>
+            <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <polygon points="0,0 6,3 0,6" fill="#5c564e"/>
+            </marker>
+          </defs>
+          <rect x="180" y="12" width="280" height="44" rx="8" fill="#efe7db" stroke="#8b3a2a"/>
+          <text x="320" y="40" text-anchor="middle" font-size="14" fill="#1c1916">parseArgs(process.argv.slice(2))</text>
+          <line x1="320" y1="56" x2="320" y2="84" stroke="#5c564e" marker-end="url(#arrow2)"/>
+
+          <rect x="180" y="86" width="280" height="48" rx="8" fill="#fffdf8" stroke="#5c564e"/>
+          <text x="320" y="108" text-anchor="middle" font-size="13" fill="#1c1916">带有 --run 吗？</text>
+          <text x="320" y="126" text-anchor="middle" font-size="11" fill="#5c564e">没有则打印后 return，不打模型</text>
+
+          <line x1="320" y1="134" x2="320" y2="164" stroke="#5c564e" marker-end="url(#arrow2)"/>
+          <rect x="150" y="166" width="340" height="48" rx="8" fill="#efe7db" stroke="#8b3a2a"/>
+          <text x="320" y="188" text-anchor="middle" font-size="13" fill="#1c1916">loadCases → Zod 校验 → selected</text>
+          <text x="320" y="206" text-anchor="middle" font-size="11" fill="#5c564e">--limit 1 只取前 1 条，不是 --limit=1</text>
+
+          <line x1="320" y1="214" x2="320" y2="244" stroke="#5c564e" marker-end="url(#arrow2)"/>
+          <rect x="120" y="246" width="400" height="70" rx="8" fill="#fffdf8" stroke="#5c564e"/>
+          <text x="320" y="274" text-anchor="middle" font-size="13" fill="#1c1916">对 selected 中每一条，串行重复 3 次 reviewOnce</text>
+          <text x="320" y="296" text-anchor="middle" font-size="11" fill="#5c564e">单次失败会记下来并继续跑，不计入报出率，也不当成 clean</text>
+
+          <line x1="320" y1="316" x2="320" y2="346" stroke="#5c564e" marker-end="url(#arrow2)"/>
+          <rect x="120" y="348" width="400" height="58" rx="8" fill="#efe7db" stroke="#1f5a3d"/>
+          <text x="320" y="374" text-anchor="middle" font-size="13" fill="#1c1916">hasReportedIssue：只看 issues 是否非空</text>
+          <text x="320" y="394" text-anchor="middle" font-size="11" fill="#5c564e">这不是正确命中，也不叫召回率</text>
+
+          <line x1="320" y1="406" x2="320" y2="436" stroke="#5c564e" marker-end="url(#arrow2)"/>
+          <rect x="70" y="438" width="240" height="70" rx="8" fill="#fffdf8" stroke="#8a5a10"/>
+          <text x="190" y="466" text-anchor="middle" font-size="13" fill="#1c1916">逐条打印审查原文</text>
+          <text x="190" y="486" text-anchor="middle" font-size="11" fill="#5c564e">keywords 仅对照；人工=待核对</text>
+
+          <rect x="330" y="438" width="240" height="70" rx="8" fill="#fffdf8" stroke="#8a5a10"/>
+          <text x="450" y="466" text-anchor="middle" font-size="13" fill="#1c1916">用例级 / 运行级统计</text>
+          <text x="450" y="486" text-anchor="middle" font-size="11" fill="#5c564e">find 与 clean 分母分开</text>
+
+          <line x1="190" y1="508" x2="190" y2="548" stroke="#5c564e" marker-end="url(#arrow2)"/>
+          <line x1="450" y1="508" x2="450" y2="548" stroke="#5c564e" marker-end="url(#arrow2)"/>
+          <line x1="190" y1="548" x2="450" y2="548" stroke="#5c564e"/>
+          <line x1="320" y1="548" x2="320" y2="572" stroke="#5c564e" marker-end="url(#arrow2)"/>
+          <rect x="180" y="574" width="280" height="50" rx="8" fill="#efe7db" stroke="#8b3a2a"/>
+          <text x="320" y="604" text-anchor="middle" font-size="13" fill="#1c1916">写入 results/results-*.json</text>
+        </svg>
+        <div class="sr-flow">
+          <strong>文字版：</strong>
+          <ol>
+            <li>解析参数。没有 <code>--run</code> 就结束，不调用模型。</li>
+            <li>加载并校验用例，按 <code>--limit</code> 截取。</li>
+            <li>对每条选中用例串行跑 3 次 <code>reviewOnce</code>。单次失败会记入失败列表并继续，不把失败当成 clean，也不计入报出率。</li>
+            <li>每次只记录有没有报问题，打印原文，人工状态为待核对。</li>
+            <li>按 find/clean 分别计算用例级和运行级比率，再写 JSON。</li>
+          </ol>
+        </div>
+      </figure>
+    </section>
+
+    <section id="judge">
+      <h2>8. 从关键词判对到「只看有没有报」</h2>
+      <p>最初的辅助判定是：find 用例要把一条 review 里所有卡片的 title / reason / suggestion 拼成一段文字，再要求 <code>keywords.every(keyword =&gt; text.includes(keyword))</code>。这会带来几层问题，不能靠改成 <code>some</code> 来掩盖：</p>
+      <ul>
+        <li>模型完全可能用自己的话说明了正确的问题，但一个规定关键词都没出现。今天实际遇到的就是这类情况，于是全部 find 都被判失败。</li>
+        <li>反过来，短词（如 <code>id</code>、<code>for</code>、<code>hook</code>）很容易在无关描述里出现。跨多张卡片拼接后再 <code>includes</code>，还可能一张卡贡献一半词、另一张卡贡献另一半词，整组 <code>every</code> 仍然通过。那不是「报对了」，只是字面上凑齐了。</li>
+        <li>合法 JSON 只说明形状对。关键字命中仍然只是粗筛。三次都「命中」只说明这个粗筛稳定，不证明内容正确。</li>
+      </ul>
+      <p>晚上协商后，辅助逻辑改成了现在的 <code>hasReportedIssue</code>：只看 <code>issues.length &gt; 0</code>。find 上这叫「报出了问题」，clean 上这叫「报了问题（程序把它计为误报候选）」。两边都不再把这个布尔值叫做正确命中。关键词仍留在用例里，打印时作为「仅供人工对照」的预期，不参与自动判定，也没有进入 <code>buildReviewPrompt</code>。</p>
+      <pre><code>export function hasReportedIssue(review: Review): boolean {
+  return review.issues.length &gt; 0;
+}</code></pre>
+      <p>自动数字因此改叫 <strong>find 用例报出率</strong> 和 <strong>clean 用例误报率</strong>。前者不是正确识别召回率。人工栏一律是「待核对」，脚本不会因为报出了就把这条标成正确。</p>
+    </section>
+
+    <section id="stats">
+      <h2>9. 统计口径：用例级、运行级，以及旧错误</h2>
+      <p>当前 <code>summarizeReportStats</code> 把 find 和 clean 分开，并且同时给出两套分母不同的比率。不要把它们混成一个数。</p>
+      <table>
+        <thead>
+          <tr><th></th><th>旧实现（已改正）</th><th>当前实现</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>分母</td>
+            <td>find 和 clean、3 次重复，全部倒进同一个 <code>results.length</code></td>
+            <td>用例级分母是该类用例数；运行级分母是该类成功记下的运行次数</td>
+          </tr>
+          <tr>
+            <td>分子</td>
+            <td>把所有 <code>isHit === true</code> 算「发现了」，把所有 <code>false</code> 算「误报」。于是 clean 上「正确不报」被算进发现，find 上的漏报被算进误报</td>
+            <td>find 只统计「报出了问题」的 find；clean 只统计「报了问题」的 clean</td>
+          </tr>
+          <tr>
+            <td>3 次如何进分子</td>
+            <td>一次运行被当成一条用例，样本量被扩大了 3 倍</td>
+            <td>用例级：同一条的 3 次先汇总，<strong>至少 1 次报出</strong>才计入该用例；运行级：每次运行单独计数</td>
+          </tr>
+          <tr>
+            <td>看起来像什么</td>
+            <td>两个率永远加起来是 100%，完全分不清召回和误报</td>
+            <td>两个率不再互补；但 find 报出率仍然不是正确召回率</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>用文字写公式（当前代码，分母为 0 时比率为 0）：</p>
+      <p>用例级 find 报出率 ＝（至少有一次报出问题的 find 用例数）÷（find 用例数）</p>
+      <p>用例级 clean 误报率 ＝（至少有一次报出问题的 clean 用例数）÷（clean 用例数）</p>
+      <p>运行级 find 报出率 ＝（报出问题的 find 运行次数）÷（find 运行次数）</p>
+      <p>运行级 clean 误报率 ＝（报出问题的 clean 运行次数）÷（clean 运行次数）</p>
+      <p>这里的「运行次数」都是<strong>成功得到完整 Review 的次数</strong>。失败次数另计，不进这两个分母，也不进分子。因此失败不会被算成 clean，但也不会把「三次全失败」的用例算进用例级分母。</p>
+      <div class="callout">
+        <p><strong>「至少 1 次」不表示稳定。</strong>一条 find 用例 3 次里只有 1 次报出，用例级仍计入分子，但运行级会暴露 1/3。三次重复的意义是观察波动：模型这次报、下次不报，说明不要只跑一次就下结论。三次都报出，也只说明「报没报」这件事稳定，不说明每次都报对了。</p>
+      </div>
+    </section>
+
+    <section id="case">
+      <h2>10. 贯穿教学示例与四象限</h2>
+      <p class="meta">以下是教学示例，用来讲清机制。它不是某次真实模型输出，也没有编造评测分数。</p>
+      <p>假设有一条 find 用例：组件在 <code>if (!id) return null</code> 之后才调用 Hook。预期是人能看出「条件调用 Hook」。程序不会用关键词去判对，只看有没有 issue。</p>
+      <table>
+        <thead>
+          <tr><th>次数</th><th>模型输出（示例）</th><th>程序看到的</th><th>人工应想的</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>第 1 次</td>
+            <td>报了「提前返回之后才调用 Hook」，措辞里未必有设定关键词</td>
+            <td>报出问题</td>
+            <td>待核对。看起来像报对了，但程序并不知道</td>
+          </tr>
+          <tr>
+            <td>第 2 次</td>
+            <td>只报了「变量名不够好」</td>
+            <td>仍然是报出问题</td>
+            <td>待核对。可能报错了对象，不能因为「有 issue」就算召回</td>
+          </tr>
+          <tr>
+            <td>第 3 次</td>
+            <td><code>issues: []</code></td>
+            <td>未报问题</td>
+            <td>这一次漏报了。三次并不稳定</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>按当前口径：这条 find 用例在用例级会计入「报出」（因为至少 1 次报了）；运行级是 2/3。如果你只看用例级，会以为「这条已经覆盖」，但波动还在，而且 2 次报出里可能只有 1 次是报对的。</p>
+
+      <h3>clean / find 与报出 / 报对</h3>
+      <table>
+        <thead>
+          <tr><th></th><th>程序：报出了问题</th><th>程序：未报问题</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>find（希望抓住真问题）</td>
+            <td>计入报出。是不是报对了，仍待核对</td>
+            <td>可以看作自动可见的漏报（没报出来）</td>
+          </tr>
+          <tr>
+            <td>clean（希望不要乱报）</td>
+            <td>程序把这计为误报候选；若用例其实暗藏问题，人工可能不同意</td>
+            <td>程序看到没报。若用例本身真干净，这才接近「不误报」</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>所以「报出」和「报对」不是同一根轴。程序现在只负责左列/右列里「有没有报」；上下两行的语义对错，取决于用例写得是否可信，以及你是否对照了原文。</p>
+      <div class="callout warn">
+        <p>人工检查的前提是：你自己相信这条用例的预期。如果一条被标成 clean 的代码其实有 hook 问题，那么模型报出来反而是对的，程序却会把它算进误报率。评测不能保证每一次 review 都正确，也不能保证尺子本身完美。以后可以改进判定或补人工标记，但不需要在当周再搭一套自动裁判或对照答案生成器。</p>
+      </div>
+    </section>
+
+    <section id="commands">
+      <h2>11. 命令、是否打模型和费用</h2>
+      <p>在目录 <code>week3-cards-and-evals</code> 下运行。下表按当前 <code>package.json</code> 和 <code>parseArgs</code> 核对。会打模型的命令请自己先确认环境变量已配置；本笔记不涉及密钥。</p>
+      <table class="cmd-grid">
+        <thead>
+          <tr><th>命令</th><th>调用真实模型？</th><th>大约几次</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>pnpm typecheck</code> / <code>pnpm check-cases</code> / <code>pnpm step2:preview</code> / <code>pnpm verify</code></td>
+            <td>否。离线检查与夹具预览。</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td><code>pnpm eval</code></td>
+            <td>否。没有 <code>--run</code>，只加载用例后退出。注意：文件仍会 import <code>model/index.ts</code>，但不会走到 <code>generateText</code>。</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td><code>pnpm test:mock</code></td>
+            <td>当前实现是 TODO，以退出码 1 结束，不应访问网络。写完之前不要指望它代替评测。</td>
+            <td>0（现状）</td>
+          </tr>
+          <tr>
+            <td><code>pnpm step2:stream</code></td>
+            <td><strong>会。</strong>一次流式评审。</td>
+            <td>1 次流式调用</td>
+          </tr>
+          <tr>
+            <td><code>pnpm eval:run -- --limit 1</code></td>
+            <td><strong>会。</strong>这是先探路的安全写法。</td>
+            <td>1 条 × 3 次 ＝ 3 次 <code>generateText</code></td>
+          </tr>
+          <tr>
+            <td><code>pnpm eval:run</code>（不加 limit）</td>
+            <td><strong>会。</strong>全量，费用最高。</td>
+            <td>24 条 × 3 次 ＝ 72 次 <code>generateText</code></td>
+          </tr>
+          <tr>
+            <td><code>pnpm eval:run -- --limit=1</code></td>
+            <td>当前代码<strong>不会</strong>把这当成 limit=1，而会当成没有 limit，进而全量 72 次。不要用这条。</td>
+            <td>按代码会变成 72 次</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout cost">
+        <p><strong>会消耗额度的</strong>只有接上真实模型的那些脚本：<code>step2:stream</code> 和带 <code>--run</code> 的评测。先 <code>--limit 1</code> 再全量。并发没有做，当前是串行，这有利于避免限流，但全量仍然是 72 次调用。</p>
+      </div>
+    </section>
+
+    <section id="status">
+      <h2>12. 已经完成、仍未完成、已知问题</h2>
+      <div class="chips">
+        <span class="chip done">第 2 步终端流式已接通</span>
+        <span class="chip done">第 3 步 24/12/12 已齐</span>
+        <span class="chip done">第 4 步循环与新统计已跑得起来</span>
+        <span class="chip todo">第 5 步 mock 未完成</span>
+      </div>
+      <h3>当前代码里已经有的</h3>
+      <ul>
+        <li>离线预览和路径 A 的 <code>partialOutputStream</code> 渲染；缺字段用 <code>??</code> 占位；调用方可传 <code>isFinal</code>。流式脚本在循环结束后会再读 <code>result.output</code> 并按最终态渲染。</li>
+        <li>24 条用例，提示词只含代码，不泄露 expect / keywords。</li>
+        <li>每条 3 次的评测循环、逐条原文、<code>待核对</code>、find 报出率 / clean 误报率（用例级和运行级分开）。</li>
+        <li>结果写盘<strong>已经实现</strong>：在 <code>--run</code> 跑完后，把 <code>promptVersion</code>、<code>date</code> 和全部 <code>attempts</code>（成功与失败都在内）写成 <code>results/results-*.json</code>。仓库里也能看到这类文件。源码若还留着过时注释，以实际的 <code>writeFile</code> 为准。</li>
+        <li>评测里的单次失败<strong>已经单独记录</strong>：<code>reviewOnce</code> 用 <code>try/catch</code> 接住抛错和空 <code>output</code>，循环继续；失败列表标明「未计入报出率」，不会当成 clean。统计只纳入成功解析的运行；若某条用例三次都失败，它目前也不会进入用例级分母。逐条「待核对」区目前只展示成功次数，失败在另栏。</li>
+        <li>当前 <code>schema.ts</code> 里 <code>line</code> 是 <code>.optional()</code>，描述为「相关代码行号，没有则省略」，和指南里「可选行号」一致。把它写成必填或可选，都是 schema 的约定选择，不是某种普遍对错；可选的好处是模型指出了问题却没给行号时，仍能通过校验。</li>
+      </ul>
+      <h3>仍未完成，或需要心里有数的问题</h3>
+      <ul>
+        <li>第 5 步 <code>tests/mock-model.ts</code> 仍是 TODO，断网离线测试还没做完。</li>
+        <li><code>model/index.ts</code> 在模块加载时就用非空断言创建客户端。默认的 <code>pnpm eval</code> 也会 import 到它，缺配置时未必立刻得到明确错误。</li>
+        <li><code>src/prompts.ts</code> 仍是最短能跑的一版；第 6 步「改两次提示词、用数字对比」不在今天范围内。即便以后要对比，也不能把现在的报出率直接叫做正确召回率。</li>
+      </ul>
+    </section>
+
+    <section id="pitfalls">
+      <h2>13. 今天容易混在一起的点</h2>
+      <p>今天前半段如果先陷进某一行代码，会很难建立全貌。更清楚的顺序是：先认数据从哪来、到哪去，再看某一帧或某一次判定。</p>
+      <ul>
+        <li><strong>合法输出 ≠ 内容正确。</strong>schema 能 parse，只说明形状对。</li>
+        <li><strong>报出 ≠ 报对。</strong><code>hasReportedIssue</code> 只回答有没有 issue。</li>
+        <li><strong>find 报出率 ≠ 召回率。</strong>召回要回答的是「该找出的问题里真正找出了多少」，自动脚本现在做不到这一步。</li>
+        <li><strong>至少 1 次报出 ≠ 稳定，三次稳定 ≠ 正确。</strong></li>
+        <li><strong>用例级分母和运行级分母不能混用。</strong>旧实现把所有次数倒在一起，两个率加起来永远是 100%，那是计数错误，不是什么深刻结论。</li>
+        <li><strong>keywords 是给人看的预期，不是给模型的提示，也不是现在的自动判分依据。</strong>不能为了让关键词对得上就去改用例或提示词。</li>
+        <li><strong>空数组在流中间和流结束含义不同。</strong>render 不知道结束了没有，要由 <code>for await</code> 未结束 / 正常结束后的 <code>isFinal</code> 来告诉它。评测里的失败已被单独记录；流式脚本的最终 <code>output</code> 若抛错仍会中断。无论哪种，都不能用空 issues 去冒充 clean。</li>
+        <li><strong>本练习的「卡片」是终端文本，不是网页组件。</strong>路径 A 已经足够完成本周这条线。</li>
+        <li><strong>命令不要写成 <code>--limit=1</code>。</strong>当前解析器不认它，会变成全量 72 次调用。正确是 <code>pnpm eval:run -- --limit 1</code>。</li>
+      </ul>
+      <p class="meta">笔记写于 2026-11-13。过程上：当日约 18:46 先搭了练习骨架；讨论里一度从细节讲起，后来才用流程把框架立住；你补了 24 条用例和评测循环；21:36 的代码审阅只加了 TODO，没有改逻辑；21:55 起按约定只改了 <code>match.ts</code> 与 <code>eval.ts</code> 的辅助判分和展示。之后源码里又出现了 <code>isFinal</code>、循环结束后的最终渲染、结果写盘、评测失败续跑，以及把 <code>line</code> 改回可选——这些以当前文件为准，不把它们写成某一方的「已经掌握」证明。本文件只新增学习笔记，没有改练习实现，也没有提交 git。</p>
+    </section>
+  </div>
+</body>
+</html>

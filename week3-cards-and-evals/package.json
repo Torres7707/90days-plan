@@ -1,0 +1,28 @@
+{
+  "name": "week3-cards-and-evals",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "verify": "tsc --noEmit && tsx scripts/check-cases.ts && STEP2_DELAY_MS=0 tsx src/step2-preview.ts && tsx scripts/eval.ts && tsx scripts/check-imports.ts",
+    "check-cases": "tsx scripts/check-cases.ts",
+    "step2:preview": "tsx src/step2-preview.ts",
+    "step2:stream": "tsx --env-file=.env.local src/step2-stream.ts",
+    "eval": "tsx scripts/eval.ts",
+    "eval:run": "tsx --env-file=.env.local scripts/eval.ts --run",
+    "test:mock": "tsx tests/mock-model.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^3.0.87",
+    "ai": "^7.0.157",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

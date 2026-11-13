@@ -1,0 +1,59 @@
+{
+  "frames": [
+    {},
+    { "issues": [] },
+    { "issues": [{}] },
+    { "issues": [{ "title": "在条件语句里调用了 Hook" }] },
+    {
+      "issues": [
+        {
+          "title": "在条件语句里调用了 Hook",
+          "reason": "if (!id) 提前返回后才调用 useState / useEffect"
+        }
+      ]
+    },
+    {
+      "issues": [
+        {
+          "title": "在条件语句里调用了 Hook",
+          "reason": "if (!id) 提前返回后才调用 useState / useEffect",
+          "suggestion": "把 Hook 挪到组件顶层，用条件处理空 id。",
+          "severity": "high",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "issues": [
+        {
+          "title": "在条件语句里调用了 Hook",
+          "reason": "if (!id) 提前返回后才调用 useState / useEffect",
+          "suggestion": "把 Hook 挪到组件顶层，用条件处理空 id。",
+          "severity": "high",
+          "line": 3
+        },
+        {
+          "title": "useEffect 缺少 id 依赖"
+        }
+      ]
+    },
+    {
+      "issues": [
+        {
+          "title": "在条件语句里调用了 Hook",
+          "reason": "if (!id) 提前返回后才调用 useState / useEffect",
+          "suggestion": "把 Hook 挪到组件顶层，用条件处理空 id。",
+          "severity": "high",
+          "line": 3
+        },
+        {
+          "title": "useEffect 缺少 id 依赖",
+          "reason": "effect 使用了 id，但依赖数组是空的，id 变化时不会重新请求。",
+          "suggestion": "把 id 加入依赖数组，并在清理函数里取消过期请求。",
+          "severity": "medium",
+          "line": 6
+        }
+      ]
+    }
+  ]
+}
