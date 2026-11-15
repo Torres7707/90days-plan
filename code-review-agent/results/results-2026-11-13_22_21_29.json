@@ -1,0 +1,1748 @@
+{
+  "promptVersion": "v0-baseline",
+  "date": "2026/11/13 22:21:29",
+  "attempts": [
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-01-conditional-hook",
+        "code": "function User({ id }) {\n  if (!id) return null;\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "条件"
+        ],
+        "note": "early return 后再调用 Hook，违反 Rules of Hooks。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useEffect 缺少依赖项",
+            "reason": "useEffect 中使用了来自 props 的 'id' 进行数据请求，但依赖项数组为空。当 'id' 在组件挂载后发生变化时，组件不会重新获取数据，导致显示过时或错误的数据。",
+            "suggestion": "将 'id' 添加到 useEffect 的依赖数组中，即 useEffect(..., [id])",
+            "severity": "high"
+          },
+          {
+            "title": "缺少加载状态提示",
+            "reason": "在数据未加载完成时 (user 为 null)，组件仅渲染空内容，没有给用户任何加载反馈。",
+            "suggestion": "在渲染时增加加载状态判断，如：{user ? user.name : '加载中'}",
+            "severity": "medium"
+          },
+          {
+            "title": "API 路径建议使用模板字符串",
+            "reason": "URL 拼接使用了加号运算符，可读性不佳且容易出错。",
+            "suggestion": "使用 ES6 模板字符串拼接 URL：`/api/users/${id}`",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-01-conditional-hook",
+        "code": "function User({ id }) {\n  if (!id) return null;\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "条件"
+        ],
+        "note": "early return 后再调用 Hook，违反 Rules of Hooks。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useEffect缺少依赖",
+            "reason": "useEffect的依赖数组为空，但内部使用了id参数。当id变化时不会重新触发数据请求。",
+            "suggestion": "将id添加到useEffect的依赖数组中：useEffect(() => {...}, [id])",
+            "severity": "high"
+          },
+          {
+            "title": "useEffect缺少清理函数",
+            "reason": "异步fetch操作完成后才调用setState，组件可能已经卸载，可能引发内存泄漏或React的警告。",
+            "suggestion": "添加cleanup函数和标志位判断组件是否仍挂载，例如使用AbortController或在回调中检查标志。",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-01-conditional-hook",
+        "code": "function User({ id }) {\n  if (!id) return null;\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "条件"
+        ],
+        "note": "early return 后再调用 Hook，违反 Rules of Hooks。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useEffect 缺少依赖项 id",
+            "reason": "useEffect 的依赖数组为空 []，但内部使用了 id。当 id 变化时 effect 不会重新执行，导致组件始终显示旧用户的过期数据。",
+            "suggestion": "将 useEffect 的依赖数组改为 [id]，或在内部使用 id 时确保正确处理（如用函数式更新）。",
+            "severity": "medium"
+          },
+          {
+            "title": "fetch 请求缺少错误处理",
+            "reason": "fetch 链未添加 .catch()，网络错误或非 2xx 响应会导致未处理的 Promise 拒绝。",
+            "suggestion": "添加 .catch() 处理，并在组件中维护 error 状态以展示错误信息。",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-02-missing-effect-deps",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useEffect",
+          "id"
+        ],
+        "note": "effect 使用了 id，但依赖数组为空。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useEffect 缺少 id 依赖导致数据不更新",
+            "reason": "useEffect 的依赖数组为空 []，但回调函数内使用了 id 变量。当父组件传入的 id 变化时，effect 不会重新执行，导致始终获取旧 id 的数据。",
+            "suggestion": "将 id 加入 useEffect 的依赖数组：[id]，或在 effect 内使用新值重新请求。若希望仅在挂载时请求一次，需额外处理 id 变化逻辑。",
+            "severity": "high",
+            "line": 3
+          },
+          {
+            "title": "fetch 缺少错误处理",
+            "reason": "fetch 和 r.json() 都可能抛出异常（网络错误、非 2xx 响应、无效 JSON），当前代码没有 .catch() 或 try/catch，会导致未处理的 Promise 拒绝。",
+            "suggestion": "添加 .catch() 或在回调中使用 try/catch 处理异常，并对响应状态码做检查（如 r.ok）。",
+            "severity": "medium",
+            "line": 4
+          },
+          {
+            "title": "异步请求后组件卸载可能导致内存泄漏",
+            "reason": "fetch 是异步操作，若组件在请求完成前卸载，调用 setUser 会触发对已卸载组件的状态更新。",
+            "suggestion": "在 effect 中引入 cleanup 变量记录是否已卸载，或在 setUser 前判断组件是否仍挂载。",
+            "severity": "low",
+            "line": 3
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-02-missing-effect-deps",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useEffect",
+          "id"
+        ],
+        "note": "effect 使用了 id，但依赖数组为空。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing dependency 'id' in useEffect",
+            "reason": "The effect uses the 'id' variable to perform the fetch but omits it from the dependency array, which causes the component to ignore subsequent prop updates.",
+            "suggestion": "Add 'id' to the dependency array of useEffect: [id]",
+            "severity": "high"
+          },
+          {
+            "title": "Missing error handling and response validation",
+            "reason": "The fetch promise chain lacks a .catch() for network errors and does not check r.ok before parsing the response, potentially leading to unhandled rejections or invalid state.",
+            "suggestion": "Add a .catch() handler for errors and check if (r.ok) before calling r.json().",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-02-missing-effect-deps",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useEffect",
+          "id"
+        ],
+        "note": "effect 使用了 id，但依赖数组为空。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useEffect missing dependency 'id'",
+            "reason": "The effect uses the 'id' prop to fetch data, but 'id' is not included in the dependency array. This means the effect runs only on mount and won't refetch when 'id' changes, leading to stale data.",
+            "suggestion": "Add 'id' to the dependency array: useEffect(() => {...}, [id])",
+            "severity": "high",
+            "line": 5
+          },
+          {
+            "title": "Fetch request lacks error handling",
+            "reason": "The fetch promise chain has no .catch() handler, so any network errors or non-OK responses will result in an unhandled promise rejection.",
+            "suggestion": "Add a .catch() handler to handle errors gracefully, e.g., setUser(null) or setError state.",
+            "severity": "medium",
+            "line": 4
+          },
+          {
+            "title": "Possible state update after component unmount",
+            "reason": "If the component unmounts before the fetch completes, calling setUser will attempt to update state on an unmounted component, which React warns about and may cause memory leaks.",
+            "suggestion": "Implement a cleanup function in useEffect to set a flag or abort controller, and check it before calling setUser.",
+            "severity": "low",
+            "line": 3
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-03-key-index",
+        "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo, index) => (\n        <li key={index}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n",
+        "expect": "find",
+        "keywords": [
+          "key",
+          "index"
+        ],
+        "note": "列表用 index 当 key，重排/删除时状态会错位。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Using array index as key prop",
+            "reason": "Using the index as the key can cause issues with component state and inefficient rendering when the list order changes or items are added/removed.",
+            "suggestion": "Use a unique identifier from the todo item (e.g., todo.id) as the key instead of the index.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-03-key-index",
+        "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo, index) => (\n        <li key={index}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n",
+        "expect": "find",
+        "keywords": [
+          "key",
+          "index"
+        ],
+        "note": "列表用 index 当 key，重排/删除时状态会错位。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "使用索引作为 key",
+            "reason": "在列表中使用数组索引作为 key 可能会导致组件状态错乱和渲染性能问题，特别是在列表顺序发生变化或项目被插入/删除时。",
+            "suggestion": "应使用待办事项的唯一标识符（如 todo.id）作为 key，而不是 index。",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-03-key-index",
+        "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo, index) => (\n        <li key={index}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n",
+        "expect": "find",
+        "keywords": [
+          "key",
+          "index"
+        ],
+        "note": "列表用 index 当 key，重排/删除时状态会错位。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Using array index as key",
+            "reason": "Using the index as a key can cause performance issues and unexpected behavior when the order of items changes or items are inserted/deleted.",
+            "suggestion": "Use a unique and stable identifier from the todo item (e.g., todo.id) instead of the index.",
+            "severity": "high",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-04-mutate-state",
+        "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    todos.push({ id: Date.now(), text });\n    setTodos(todos);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "state",
+          "直接修改",
+          "push"
+        ],
+        "note": "直接 mutate state 再 setState，React 可能检测不到更新。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing 'useState' import",
+            "reason": "The 'useState' hook is used but not imported from 'react', which will result in a ReferenceError.",
+            "suggestion": "Add 'import { useState } from \"react\";' at the top of the file.",
+            "severity": "high",
+            "line": 1
+          },
+          {
+            "title": "Direct state mutation",
+            "reason": "The code uses Array.prototype.push() to modify the 'todos' array, which mutates the state directly instead of creating a new array.",
+            "suggestion": "Use the spread operator to create a new array before updating state, e.g., setTodos([...todos, { id: Date.now(), text }]).",
+            "severity": "medium",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-04-mutate-state",
+        "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    todos.push({ id: Date.now(), text });\n    setTodos(todos);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "state",
+          "直接修改",
+          "push"
+        ],
+        "note": "直接 mutate state 再 setState，React 可能检测不到更新。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Direct state mutation",
+            "reason": "The code uses `todos.push()` to modify the state array directly. React relies on immutability for state updates to correctly detect changes and trigger re-renders.",
+            "suggestion": "Create a new array using the spread operator before calling the setter, e.g., `setTodos([...todos, { id: Date.now(), text }]);`",
+            "severity": "high",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-04-mutate-state",
+        "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    todos.push({ id: Date.now(), text });\n    setTodos(todos);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "state",
+          "直接修改",
+          "push"
+        ],
+        "note": "直接 mutate state 再 setState，React 可能检测不到更新。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Direct state mutation prevents re-render",
+            "reason": "Mutating state with .push() and passing the same reference to setTodos prevents React from detecting the change and triggering a re-render.",
+            "suggestion": "Use the functional update form of setTodos to create a new array: setTodos(prev => [...prev, { id: Date.now(), text }]).",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-05-hook-in-loop",
+        "code": "function Board({ cells }) {\n  const values = [];\n  for (let i = 0; i < cells.length; i++) {\n    values.push(useState(cells[i]));\n  }\n  return <div>{values.map(([v]) => v)}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "循环",
+          "for"
+        ],
+        "note": "在循环里调用 Hook，调用次数不稳定。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Hooks 在循环中调用",
+            "reason": "useState 在 for 循环中被调用，违反了 React Hooks 规则。Hooks 必须在组件顶层调用，不能在循环、条件或嵌套函数中调用。cells 长度变化时，hooks 数量不一致会导致 React 内部状态错乱。",
+            "suggestion": "将每个 cell 提取为独立子组件并各自调用 useState，或使用单个 useState 保存状态对象，通过索引更新特定 cell。",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-05-hook-in-loop",
+        "code": "function Board({ cells }) {\n  const values = [];\n  for (let i = 0; i < cells.length; i++) {\n    values.push(useState(cells[i]));\n  }\n  return <div>{values.map(([v]) => v)}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "循环",
+          "for"
+        ],
+        "note": "在循环里调用 Hook，调用次数不稳定。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useState called inside loop violates Rules of Hooks",
+            "reason": "React requires hooks to be called at the top level of the component. Calling useState inside a for loop breaks the Rules of Hooks and will cause runtime errors.",
+            "suggestion": "Use a single useState holding an array copy of cells, e.g. useState(cells.slice()), or useReducer for board state management.",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-05-hook-in-loop",
+        "code": "function Board({ cells }) {\n  const values = [];\n  for (let i = 0; i < cells.length; i++) {\n    values.push(useState(cells[i]));\n  }\n  return <div>{values.map(([v]) => v)}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "循环",
+          "for"
+        ],
+        "note": "在循环里调用 Hook，调用次数不稳定。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "在循环中调用 Hook 违反规则",
+            "reason": "React Hooks 必须在组件顶层调用，不能在循环中调用。在循环中调用 useState 会破坏 Hook 的调用顺序，导致每次渲染状态不一致，引发 React 警告和潜在 Bug。",
+            "suggestion": "改为使用单个 useState 管理整个 cells 数组，通过索引或 map 更新特定单元格的状态。",
+            "severity": "high",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-06-ternary-hook",
+        "code": "function Panel({ advanced }) {\n  const mode = advanced ? useAdvancedMode() : useBasicMode();\n  return <div>{mode}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "三元",
+          "条件"
+        ],
+        "note": "三元表达式里条件调用 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Conditional hook call violates Rules of Hooks",
+            "reason": "useAdvancedMode and useBasicMode are called conditionally based on the advanced prop, which violates the Rules of Hooks and causes runtime errors when the component re-renders with different props.",
+            "suggestion": "Always call both hooks unconditionally at the top of the component, then conditionally select the value to render.",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-06-ternary-hook",
+        "code": "function Panel({ advanced }) {\n  const mode = advanced ? useAdvancedMode() : useBasicMode();\n  return <div>{mode}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "三元",
+          "条件"
+        ],
+        "note": "三元表达式里条件调用 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Hooks cannot be called inside conditional statements",
+            "reason": "Calling useAdvancedMode and useBasicMode inside the ternary operator violates React's Rules of Hooks, which require hooks to be called in the exact same order on every render.",
+            "suggestion": "Move the hook calls outside the conditional logic, for example by using an if/else block or early return, ensuring the hook call sequence remains consistent.",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-06-ternary-hook",
+        "code": "function Panel({ advanced }) {\n  const mode = advanced ? useAdvancedMode() : useBasicMode();\n  return <div>{mode}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "三元",
+          "条件"
+        ],
+        "note": "三元表达式里条件调用 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Conditional hook calls violate Rules of Hooks",
+            "reason": "React Hooks must be called unconditionally at the top level. Calling useAdvancedMode() or useBasicMode() based on the 'advanced' prop causes React to lose track of hook indices when the prop changes between renders.",
+            "suggestion": "Call both hooks unconditionally and select the return value conditionally, e.g., const basicMode = useBasicMode(); const advancedMode = useAdvancedMode(); const mode = advanced ? advancedMode : basicMode;",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-07-hook-inside-callback",
+        "code": "function Tracker({ id }) {\n  useEffect(() => {\n    const [count, setCount] = useState(0);\n    setCount(count + 1);\n  }, [id]);\n  return null;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "callback",
+          "useEffect"
+        ],
+        "note": "在 useEffect 回调里再调 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Hooks调用位置错误",
+            "reason": "useState被放置在useEffect回调内部，违反了React的Rules of Hooks。自定义Hook必须在组件顶层或自定义Hook顶层调用，不能在条件、循环或回调中调用。",
+            "suggestion": "将useState移至组件顶层：const [count, setCount] = useState(0); 然后在useEffect中使用。",
+            "severity": "high",
+            "line": 3
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-07-hook-inside-callback",
+        "code": "function Tracker({ id }) {\n  useEffect(() => {\n    const [count, setCount] = useState(0);\n    setCount(count + 1);\n  }, [id]);\n  return null;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "callback",
+          "useEffect"
+        ],
+        "note": "在 useEffect 回调里再调 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Hooks must be called at the top level",
+            "reason": "useState is called inside useEffect, violating the Rules of Hooks which require all hooks to be called at the top level of the component function, not inside callbacks or effects.",
+            "suggestion": "Move const [count, setCount] = useState(0) to the top level of the component body, before useEffect.",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-07-hook-inside-callback",
+        "code": "function Tracker({ id }) {\n  useEffect(() => {\n    const [count, setCount] = useState(0);\n    setCount(count + 1);\n  }, [id]);\n  return null;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "callback",
+          "useEffect"
+        ],
+        "note": "在 useEffect 回调里再调 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Rules of Hooks violated",
+            "reason": "Calling useState inside the useEffect callback violates the Rules of Hooks, which requires all hooks to be called at the top level of the component.",
+            "suggestion": "Declare the useState hook outside of the useEffect, at the top level of the component.",
+            "severity": "high",
+            "line": 3
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-08-missing-callback-deps",
+        "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, []);\n  return <button onClick={onSearch}>Search</button>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useCallback",
+          "query"
+        ],
+        "note": "useCallback 闭包用了 query，但依赖数组为空。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useCallback missing dependency 'query'",
+            "reason": "The useCallback hook relies on the 'query' variable, but it is omitted from the dependency array. This causes a stale closure issue where the button will always use the initial query value instead of the current one.",
+            "suggestion": "Add 'query' to the dependency array of useCallback.",
+            "severity": "high"
+          },
+          {
+            "title": "Unhandled promise from fetch",
+            "reason": "The fetch request is not awaited or chained with .then(), which can lead to unhandled promise rejections and makes it impossible to handle errors or know when the request completes.",
+            "suggestion": "Handle the fetch promise using async/await or .then/.catch chains.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-08-missing-callback-deps",
+        "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, []);\n  return <button onClick={onSearch}>Search</button>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useCallback",
+          "query"
+        ],
+        "note": "useCallback 闭包用了 query，但依赖数组为空。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useCallback missing dependency",
+            "reason": "onSearch uses the query variable but it is omitted from the dependency array, creating a stale closure that always sends the initial query value",
+            "suggestion": "Add query to the useCallback dependency array: useCallback(() => {...}, [query])",
+            "severity": "high"
+          },
+          {
+            "title": "URL parameter not encoded",
+            "reason": "The query is concatenated directly into the URL string without encoding, so values containing spaces, &, =, or other reserved characters will produce an invalid or incorrect request",
+            "suggestion": "Encode the query before interpolation: '/api/search?q=' + encodeURIComponent(query)",
+            "severity": "medium"
+          },
+          {
+            "title": "No error handling",
+            "reason": "fetch() resolves even for HTTP error responses and there is no catch handler, so network or server errors are silently ignored",
+            "suggestion": "Add .catch() to handle fetch rejections, or check response.ok and handle accordingly",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-08-missing-callback-deps",
+        "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, []);\n  return <button onClick={onSearch}>Search</button>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useCallback",
+          "query"
+        ],
+        "note": "useCallback 闭包用了 query，但依赖数组为空。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Stale closure in useCallback",
+            "reason": "The useCallback has an empty dependency array [], but uses 'query' inside, capturing its initial value.",
+            "suggestion": "Add 'query' to the dependency array: `}, [query])`.",
+            "severity": "high",
+            "line": 3
+          },
+          {
+            "title": "Unsafe URL parameter construction",
+            "reason": "Directly concatenating 'query' into the URL can cause malformed requests if it contains special characters like spaces or &.",
+            "suggestion": "Use encodeURIComponent: `fetch('/api/search?q=' + encodeURIComponent(query))`.",
+            "severity": "medium",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-09-missing-memo-deps",
+        "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), []);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useMemo",
+          "items"
+        ],
+        "note": "useMemo 依赖了 items，却写空依赖。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useMemo依赖数组缺失items",
+            "reason": "useMemo内部使用了items参数进行排序，但依赖数组为空[]，导致items变化时缓存值不会重新计算，返回过时的排序结果",
+            "suggestion": "将依赖数组改为[items]，确保items变化时重新计算排序",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-09-missing-memo-deps",
+        "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), []);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useMemo",
+          "items"
+        ],
+        "note": "useMemo 依赖了 items，却写空依赖。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useMemo dependency array missing 'items'",
+            "reason": "The useMemo callback references 'items' but the dependency array is empty []. The memoized value will never recompute when 'items' changes, causing stale data.",
+            "suggestion": "Add 'items' to the dependency array: useMemo(() => items.slice().sort(), [items])",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-09-missing-memo-deps",
+        "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), []);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "依赖",
+          "useMemo",
+          "items"
+        ],
+        "note": "useMemo 依赖了 items，却写空依赖。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useMemo 依赖数组缺失导致排序失效",
+            "reason": "useMemo 的依赖数组为空 [], 导致 sorted 仅在组件首次渲染时计算一次, 当 items 变化时不会重新排序, 造成界面数据与实际不符。",
+            "suggestion": "将依赖数组改为 [items], 使 useMemo 在 items 变化时重新计算排序。",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-10-and-conditional-hook",
+        "code": "function Profile({ enabled }) {\n  enabled && useFeatureFlag('profile-v2');\n  return <div>profile</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "&&",
+          "条件"
+        ],
+        "note": "用 && 短路条件调用 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Conditional hook call violates Rules of Hooks",
+            "reason": "The useFeatureFlag hook is called conditionally based on the 'enabled' prop, which violates React's Rules of Hooks requiring all hooks to be called unconditionally at the top level.",
+            "suggestion": "Move the hook call outside the conditional, or restructure the component to always call the hook and use its return value to conditionally render.",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-10-and-conditional-hook",
+        "code": "function Profile({ enabled }) {\n  enabled && useFeatureFlag('profile-v2');\n  return <div>profile</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "&&",
+          "条件"
+        ],
+        "note": "用 && 短路条件调用 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Conditional Hook Usage",
+            "reason": "Calling useFeatureFlag conditionally violates React's Rules of Hooks, which state that hooks must be called in the exact same order on every render.",
+            "suggestion": "Call the hook unconditionally at the top level of the component, then use the returned value to conditionally render or execute logic.",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-10-and-conditional-hook",
+        "code": "function Profile({ enabled }) {\n  enabled && useFeatureFlag('profile-v2');\n  return <div>profile</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "hook",
+          "&&",
+          "条件"
+        ],
+        "note": "用 && 短路条件调用 Hook。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Hook used inside conditional expression",
+            "reason": "React Hook 'useFeatureFlag' cannot be called inside a logical AND (&&) expression. Hooks must always be called unconditionally at the top level of the component.",
+            "suggestion": "Call useFeatureFlag('profile-v2') unconditionally at the beginning of the function, and then use the returned value based on the 'enabled' variable.",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-11-setstate-during-render",
+        "code": "function Counter({ step }) {\n  const [count, setCount] = useState(0);\n  if (step > 0) {\n    setCount(count + step);\n  }\n  return <div>{count}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "setState",
+          "render",
+          "渲染"
+        ],
+        "note": "在渲染阶段直接 setState，可能死循环。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "State update during render causes infinite loop",
+            "reason": "Calling setCount(count + step) directly in the component body triggers a state update during the render phase. Since step > 0 remains true after the update, it causes the component to re-render continuously, resulting in an infinite loop.",
+            "suggestion": "Move the state update into a useEffect hook or an event handler, or compute the value directly during render without using state.",
+            "severity": "high"
+          },
+          {
+            "title": "Missing useState import",
+            "reason": "The useState hook is used but not imported from 'react'.",
+            "suggestion": "Add 'import { useState } from \\'react\\';' at the top of the file.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-11-setstate-during-render",
+        "code": "function Counter({ step }) {\n  const [count, setCount] = useState(0);\n  if (step > 0) {\n    setCount(count + step);\n  }\n  return <div>{count}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "setState",
+          "render",
+          "渲染"
+        ],
+        "note": "在渲染阶段直接 setState，可能死循环。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Infinite re-render loop",
+            "reason": "Calling setState directly inside the component body during the render phase causes React to re-render immediately. Since count increases by step on every render, this creates an infinite loop leading to a 'Maximum update depth exceeded' error.",
+            "suggestion": "Move the setState call into a useEffect hook with 'step' included in the dependency array, or trigger it only through a user interaction such as a button click.",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-11-setstate-during-render",
+        "code": "function Counter({ step }) {\n  const [count, setCount] = useState(0);\n  if (step > 0) {\n    setCount(count + step);\n  }\n  return <div>{count}</div>;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "setState",
+          "render",
+          "渲染"
+        ],
+        "note": "在渲染阶段直接 setState，可能死循环。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "在渲染过程中调用setState导致无限循环",
+            "reason": "组件渲染期间直接调用setCount，每次渲染都会触发state更新，导致组件不断重新渲染形成无限循环",
+            "suggestion": "将setCount移至useEffect或事件处理函数中",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-12-mutate-props",
+        "code": "function Editor({ draft }) {\n  draft.title = draft.title.trim();\n  return <input value={draft.title} readOnly />;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "props",
+          "直接修改",
+          "mutate"
+        ],
+        "note": "直接修改 props 对象字段。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Mutating props directly",
+            "reason": "Directly modifying the `draft` prop violates React's immutability principle for props, which can cause unpredictable rendering and bugs.",
+            "suggestion": "Create a local state or a copy of the prop to store the trimmed title instead of mutating the original prop.",
+            "severity": "high"
+          },
+          {
+            "title": "Potential crash on undefined or null",
+            "reason": "Calling `.trim()` on a property that might be null or undefined will throw a TypeError.",
+            "suggestion": "Use optional chaining like `draft.title?.trim()` or add a guard clause to ensure the title exists before trimming.",
+            "severity": "medium"
+          },
+          {
+            "title": "Incorrect HTML attribute",
+            "reason": "The `<input>` element does not support the `readOnly` attribute; the correct HTML attribute is `readonly` (without the 'e').",
+            "suggestion": "Change `readOnly` to `readonly`.",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-12-mutate-props",
+        "code": "function Editor({ draft }) {\n  draft.title = draft.title.trim();\n  return <input value={draft.title} readOnly />;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "props",
+          "直接修改",
+          "mutate"
+        ],
+        "note": "直接修改 props 对象字段。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Mutating props",
+            "reason": "The component directly mutates the `draft` prop object via `draft.title = ...`, violating React's immutability rule for props.",
+            "suggestion": "Avoid mutating props. Create a local variable for the trimmed value: `const trimmedTitle = draft.title.trim();` and use that in the JSX.",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "find-12-mutate-props",
+        "code": "function Editor({ draft }) {\n  draft.title = draft.title.trim();\n  return <input value={draft.title} readOnly />;\n}\n",
+        "expect": "find",
+        "keywords": [
+          "props",
+          "直接修改",
+          "mutate"
+        ],
+        "note": "直接修改 props 对象字段。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Props mutation",
+            "reason": "Directly modifying the props object (draft.title = ...) violates React's unidirectional data flow principle and leads to unpredictable rendering and side effects.",
+            "suggestion": "Use local component state (e.g., useState) initialized from the draft prop to manage the trimmed title.",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-01-effect-with-deps",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "clean",
+        "note": "Hook 在顶层，effect 依赖正确且有取消标志。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "缺少错误处理",
+            "reason": "fetch 请求链没有添加 .catch()，如果请求失败（如网络错误或响应非 JSON）会导致未处理的 Promise 拒绝。",
+            "suggestion": "在 Promise 链末尾添加 .catch() 来捕获并处理异常，例如设置错误状态或展示降级 UI。",
+            "severity": "medium"
+          },
+          {
+            "title": "URL 拼接存在注入风险",
+            "reason": "直接将 id 参数拼接进 URL 字符串，若 id 包含特殊字符（如路径遍历符），可能引发安全问题。",
+            "suggestion": "使用 encodeURIComponent(id) 对参数进行编码，或者在调用前对 id 的格式进行严格校验。",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-01-effect-with-deps",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "clean",
+        "note": "Hook 在顶层，effect 依赖正确且有取消标志。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing imports for React hooks",
+            "reason": "The component uses useState and useEffect but does not import them from 'react'. This will cause a ReferenceError at runtime.",
+            "suggestion": "Add `import { useState, useEffect } from 'react';` at the top of the file.",
+            "severity": "high"
+          },
+          {
+            "title": "No error handling for fetch request",
+            "reason": "The fetch call is not wrapped in a try-catch or .catch(), so any network error or non-OK response will result in an unhandled promise rejection and the component will remain in a loading state.",
+            "suggestion": "Add a .catch() handler to set an error state or handle the failure appropriately.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-01-effect-with-deps",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "clean",
+        "note": "Hook 在顶层，effect 依赖正确且有取消标志。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "缺少 fetch 请求的错误处理",
+            "reason": "Promise 链中没有 .catch() 处理程序。如果网络请求失败或响应内容不是合法的 JSON，会导致未处理的 Promise 拒绝，可能抛出浏览器警告。",
+            "suggestion": "在 Promise 链末尾添加 .catch() 方法来处理错误，例如更新状态以显示加载失败或记录日志。",
+            "severity": "medium"
+          },
+          {
+            "title": "URL 参数拼接存在潜在风险",
+            "reason": "直接将 id 拼接到 URL 字符串中，如果 id 包含特殊字符（如 '/'），可能会改变请求路径或引发安全问题。",
+            "suggestion": "使用 encodeURIComponent(id) 对 id 进行编码后再拼接进 URL。",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-02-hooks-before-early-return",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    if (!id) return;\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  if (!id) return null;\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "clean",
+        "note": "先无条件调用 Hook，再 early return。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing error handling for fetch request",
+            "reason": "The fetch promise chain lacks a .catch() handler, resulting in unhandled promise rejections and no way to handle network failures gracefully.",
+            "suggestion": "Add a .catch() block to handle fetch errors, such as setting an error state or logging the error.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-02-hooks-before-early-return",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    if (!id) return;\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  if (!id) return null;\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "clean",
+        "note": "先无条件调用 Hook，再 early return。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing error handling for fetch request",
+            "reason": "The fetch promise chain does not handle rejections. A failed request (e.g., network error or 404) will result in an unhandled promise rejection.",
+            "suggestion": "Add a .catch() handler to the fetch chain to handle errors gracefully, ensuring it also respects the cancelled flag if updating state.",
+            "severity": "high"
+          },
+          {
+            "title": "Stale state due to early return",
+            "reason": "The `if (!id) return null;` statement causes the component to hide without resetting the `user` state. If `id` becomes valid again, the component renders with the previous stale `user` data instead of fetching new data.",
+            "suggestion": "Remove the early return. Since `user` defaults to null and the effect skips fetching when `id` is invalid, `user?.name` will safely render as empty.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-02-hooks-before-early-return",
+        "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    if (!id) return;\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  if (!id) return null;\n  return <div>{user?.name}</div>;\n}\n",
+        "expect": "clean",
+        "note": "先无条件调用 Hook，再 early return。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Falsy ID check blocks valid ID 0",
+            "reason": "Using `if (!id)` treats 0 as a falsy value. If 0 is a valid user ID, the fetch will be skipped and the user won't load.",
+            "suggestion": "Use `id == null` or explicit `id === undefined || id === null` checks to properly identify missing IDs while allowing 0.",
+            "severity": "medium",
+            "line": 6
+          },
+          {
+            "title": "Missing cleanup return in useEffect",
+            "reason": "The early return `if (!id) return;` does not return a cleanup function. While safe here since no fetch starts, it breaks the consistent cleanup pattern and can cause missed cancellations if the effect body changes.",
+            "suggestion": "Return an empty cleanup function explicitly: `if (!id) return () => {};`",
+            "severity": "low",
+            "line": 7
+          },
+          {
+            "title": "URL built using string concatenation",
+            "reason": "String concatenation for building URLs is less readable and more error-prone than template literals.",
+            "suggestion": "Use template literals: `` `/api/users/${id}` ``",
+            "severity": "low",
+            "line": 9
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-03-stable-key",
+        "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo) => (\n        <li key={todo.id}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n",
+        "expect": "clean",
+        "note": "列表用稳定 id 当 key。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "缺少对 props.todos 的空值和类型检查",
+            "reason": "当 todos 为 null、undefined 或非数组时，调用 .map() 会抛出运行时错误",
+            "suggestion": "在渲染前添加校验，例如：const safeTodos = Array.isArray(todos) ? todos : []; 并使用 safeTodos 进行 map",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-03-stable-key",
+        "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo) => (\n        <li key={todo.id}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n",
+        "expect": "clean",
+        "note": "列表用稳定 id 当 key。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Potential runtime error when 'todos' is null or undefined",
+            "reason": "Calling '.map()' on a null or undefined 'todos' prop will throw a TypeError at runtime.",
+            "suggestion": "Add a default value for 'todos' or guard against null/undefined before calling .map().",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-03-stable-key",
+        "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo) => (\n        <li key={todo.id}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n",
+        "expect": "clean",
+        "note": "列表用稳定 id 当 key。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-04-immutable-state-update",
+        "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    setTodos((prev) => [...prev, { id: Date.now(), text }]);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n",
+        "expect": "clean",
+        "note": "用不可变方式更新 state。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "未使用 useCallback 包裹 addTodo 函数",
+            "reason": "addTodo 在每次渲染时都会重新创建，可能导致不必要的子组件重渲染",
+            "suggestion": "使用 useCallback 包裹 addTodo 函数，并为其依赖项提供正确的配置",
+            "severity": "medium"
+          },
+          {
+            "title": "使用 Date.now() 作为唯一 ID 可能产生冲突",
+            "reason": "同一毫秒内多次调用 addTodo 会生成相同 ID",
+            "suggestion": "使用 UUID 库或递增计数器生成唯一 ID",
+            "severity": "medium"
+          },
+          {
+            "title": "组件未渲染实际的任务列表",
+            "reason": "组件名为 TodoList 但仅渲染一个添加按钮，没有展示任务列表内容",
+            "suggestion": "添加条件渲染逻辑以展示 todos 数组中的任务项",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-04-immutable-state-update",
+        "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    setTodos((prev) => [...prev, { id: Date.now(), text }]);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n",
+        "expect": "clean",
+        "note": "用不可变方式更新 state。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Syntax error: missing closing parenthesis",
+            "reason": "The arrow function passed to setTodos has an unclosed parenthesis for the 'prev' parameter.",
+            "suggestion": "Close the arrow function argument parentheses: setTodos((prev) => [...prev, { id: Date.now(), text }]);",
+            "severity": "high",
+            "line": 4
+          },
+          {
+            "title": "Todo list is not rendered",
+            "reason": "The component manages 'todos' state but never renders the list items in the returned JSX.",
+            "suggestion": "Map over the 'todos' array and render each item inside the component's return statement.",
+            "severity": "high",
+            "line": 6
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-04-immutable-state-update",
+        "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    setTodos((prev) => [...prev, { id: Date.now(), text }]);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n",
+        "expect": "clean",
+        "note": "用不可变方式更新 state。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "useState未从React导入",
+            "reason": "useState是从react包导出的hook，使用前必须先import。",
+            "suggestion": "添加import { useState } from 'react';",
+            "severity": "high"
+          },
+          {
+            "title": "addTodo函数语法错误：缺少闭合括号",
+            "reason": "setTodos回调箭头函数的右括号缺失，会导致编译/运行时报错。",
+            "suggestion": "将setTodos((prev) => [...prev, { id: Date.now(), text }]))补全闭合括号。",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-05-conditional-inside-effect",
+        "code": "function Panel({ advanced }) {\n  const basic = useBasicMode();\n  const advancedMode = useAdvancedMode();\n  const mode = advanced ? advancedMode : basic;\n  return <div>{mode}</div>;\n}\n",
+        "expect": "clean",
+        "note": "条件写在 effect 内部，Hook 本身始终调用。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-05-conditional-inside-effect",
+        "code": "function Panel({ advanced }) {\n  const basic = useBasicMode();\n  const advancedMode = useAdvancedMode();\n  const mode = advanced ? advancedMode : basic;\n  return <div>{mode}</div>;\n}\n",
+        "expect": "clean",
+        "note": "条件写在 effect 内部，Hook 本身始终调用。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-05-conditional-inside-effect",
+        "code": "function Panel({ advanced }) {\n  const basic = useBasicMode();\n  const advancedMode = useAdvancedMode();\n  const mode = advanced ? advancedMode : basic;\n  return <div>{mode}</div>;\n}\n",
+        "expect": "clean",
+        "note": "条件写在 effect 内部，Hook 本身始终调用。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-06-callback-with-deps",
+        "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, [query]);\n  return <button onClick={onSearch}>Search</button>;\n}\n",
+        "expect": "clean",
+        "note": "useCallback 依赖齐全。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "缺少 useCallback 的导入",
+            "reason": "使用了 useCallback 钩子但未从 react 导入，会导致运行时抛出 ReferenceError",
+            "suggestion": "在文件顶部添加 import { useCallback } from 'react'",
+            "severity": "high"
+          },
+          {
+            "title": "查询参数未进行 URL 编码",
+            "reason": "直接将 query 拼接到 URL 中，若包含特殊字符（如空格、&等）会导致请求地址错误或存在注入风险",
+            "suggestion": "使用 encodeURIComponent 对 query 进行编码，如 '/api/search?q=' + encodeURIComponent(query)",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-06-callback-with-deps",
+        "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, [query]);\n  return <button onClick={onSearch}>Search</button>;\n}\n",
+        "expect": "clean",
+        "note": "useCallback 依赖齐全。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Unsafe URL parameter construction",
+            "reason": "Concatenating user input directly into a URL string without encoding can lead to malformed URLs or request failures when the query contains special characters (e.g., spaces, &, ?).",
+            "suggestion": "Use encodeURIComponent(query) or construct the URL using URLSearchParams.",
+            "severity": "high"
+          },
+          {
+            "title": "Missing React import",
+            "reason": "The useCallback hook is used, but there is no import statement for it from the 'react' library.",
+            "suggestion": "Add the missing import: import { useCallback } from 'react';",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-06-callback-with-deps",
+        "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, [query]);\n  return <button onClick={onSearch}>Search</button>;\n}\n",
+        "expect": "clean",
+        "note": "useCallback 依赖齐全。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "URL参数未编码",
+            "reason": "query 参数直接拼接到 URL 中，未使用 encodeURIComponent 进行编码，可能导致 URL 无效或存在注入风险。",
+            "suggestion": "使用 encodeURIComponent 对 query 进行编码后再拼接。",
+            "severity": "high"
+          },
+          {
+            "title": "Fetch 请求缺少错误处理",
+            "reason": "fetch 方法没有 .catch() 或 try/catch 包裹，网络请求失败会导致未处理的 Promise 拒绝。",
+            "suggestion": "添加错误处理逻辑，例如使用 async/await 和 try/catch。",
+            "severity": "medium"
+          },
+          {
+            "title": "竞态条件",
+            "reason": "若 query 快速变化，先发出的请求可能在其后发出的请求完成后才执行回调，导致数据覆盖或状态混乱。",
+            "suggestion": "使用 AbortController 在 query 变化时取消上一次的请求。",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-07-memo-with-deps",
+        "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), [items]);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n",
+        "expect": "clean",
+        "note": "useMemo 依赖齐全。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "未对 items 做空值保护",
+            "reason": "当 items 为 null 或 undefined 时，items.slice() 会抛出 TypeError",
+            "suggestion": "添加前置校验，如 items?.length ? items.slice().sort() : []",
+            "severity": "medium"
+          },
+          {
+            "title": "key 依赖 item.id 但未保证唯一性",
+            "reason": "若数据中不存在 id 字段或 id 非唯一，会导致 React key 警告和渲染异常",
+            "suggestion": "使用更稳定的唯一标识符，或为 items 添加类型约束保证 id 存在且唯一",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-07-memo-with-deps",
+        "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), [items]);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n",
+        "expect": "clean",
+        "note": "useMemo 依赖齐全。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "缺少 sort 比较函数",
+            "reason": "Array.prototype.sort() 在没有比较函数时按字符串进行排序，这会导致名称中包含数字的项目顺序不正确（例如 'Item 2' 会排在 'Item 10' 之后）。",
+            "suggestion": "使用基于 name 的比较函数，例如 .sort((a, b) => a.name.localeCompare(b.name))。",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-07-memo-with-deps",
+        "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), [items]);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n",
+        "expect": "clean",
+        "note": "useMemo 依赖齐全。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "In-place array mutation",
+            "reason": "Array.prototype.sort() mutates the array in place. While items.slice() creates a shallow copy, relying on mutation is an anti-pattern and can lead to subtle bugs.",
+            "suggestion": "Use the spread operator to create a new array before sorting: [...items].sort()",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-08-effect-cleanup-timer",
+        "code": "function Clock() {\n  const [now, setNow] = useState(Date.now());\n  useEffect(() => {\n    const id = setInterval(() => setNow(Date.now()), 1000);\n    return () => clearInterval(id);\n  }, []);\n  return <div>{now}</div>;\n}\n",
+        "expect": "clean",
+        "note": "定时器有清理函数。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-08-effect-cleanup-timer",
+        "code": "function Clock() {\n  const [now, setNow] = useState(Date.now());\n  useEffect(() => {\n    const id = setInterval(() => setNow(Date.now()), 1000);\n    return () => clearInterval(id);\n  }, []);\n  return <div>{now}</div>;\n}\n",
+        "expect": "clean",
+        "note": "定时器有清理函数。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-08-effect-cleanup-timer",
+        "code": "function Clock() {\n  const [now, setNow] = useState(Date.now());\n  useEffect(() => {\n    const id = setInterval(() => setNow(Date.now()), 1000);\n    return () => clearInterval(id);\n  }, []);\n  return <div>{now}</div>;\n}\n",
+        "expect": "clean",
+        "note": "定时器有清理函数。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-09-custom-hook-top-level",
+        "code": "function useWindowWidth() {\n  const [width, setWidth] = useState(window.innerWidth);\n  useEffect(() => {\n    const onResize = () => setWidth(window.innerWidth);\n    window.addEventListener('resize', onResize);\n    return () => window.removeEventListener('resize', onResize);\n  }, []);\n  return width;\n}\n\nfunction Layout() {\n  const width = useWindowWidth();\n  return <div>{width}</div>;\n}\n",
+        "expect": "clean",
+        "note": "自定义 Hook 在组件顶层无条件调用。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "SSR incompatible access to window",
+            "reason": "Directly accessing `window.innerWidth` in the `useState` initializer will cause a `ReferenceError` during Server-Side Rendering or Static Site Generation.",
+            "suggestion": "Use a lazy initializer for `useState`, such as `useState(() => window.innerWidth)`, or guard the access with `typeof window !== 'undefined'`.",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-09-custom-hook-top-level",
+        "code": "function useWindowWidth() {\n  const [width, setWidth] = useState(window.innerWidth);\n  useEffect(() => {\n    const onResize = () => setWidth(window.innerWidth);\n    window.addEventListener('resize', onResize);\n    return () => window.removeEventListener('resize', onResize);\n  }, []);\n  return width;\n}\n\nfunction Layout() {\n  const width = useWindowWidth();\n  return <div>{width}</div>;\n}\n",
+        "expect": "clean",
+        "note": "自定义 Hook 在组件顶层无条件调用。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "SSR crash due to accessing `window` during render",
+            "reason": "`window.innerWidth` is evaluated in the `useState` initializer, which executes during the initial render. In SSR environments, `window` is undefined, causing a `ReferenceError`.",
+            "suggestion": "Initialize state with a safe default (e.g., `useState(0)`) or conditionally check for `window` (e.g., `useState(typeof window !== 'undefined' ? window.innerWidth : 0)`), and set the real value inside `useEffect`.",
+            "severity": "high"
+          },
+          {
+            "title": "Hydration mismatch risk",
+            "reason": "Reading `window.innerWidth` on the client during the first render before `useEffect` runs can cause the initial rendered HTML to differ from the server-rendered HTML if SSR is enabled.",
+            "suggestion": "Avoid reading `window` properties directly in the render body. Set the initial state to a placeholder and update it asynchronously inside `useEffect`.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-09-custom-hook-top-level",
+        "code": "function useWindowWidth() {\n  const [width, setWidth] = useState(window.innerWidth);\n  useEffect(() => {\n    const onResize = () => setWidth(window.innerWidth);\n    window.addEventListener('resize', onResize);\n    return () => window.removeEventListener('resize', onResize);\n  }, []);\n  return width;\n}\n\nfunction Layout() {\n  const width = useWindowWidth();\n  return <div>{width}</div>;\n}\n",
+        "expect": "clean",
+        "note": "自定义 Hook 在组件顶层无条件调用。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "SSR compatibility and hydration mismatch",
+            "reason": "Accessing `window.innerWidth` directly in the `useState` initializer causes a ReferenceError on the server (during SSR) and results in a hydration mismatch on the client because the initial server-rendered value differs from the client-side value.",
+            "suggestion": "Initialize state with a safe default like `null` or `0`, and only read `window.innerWidth` inside the `useEffect` hook, or guard it with `typeof window !== 'undefined'`.",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-10-functional-setstate",
+        "code": "function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>{count}</button>\n  );\n}\n",
+        "expect": "clean",
+        "note": "用函数式更新避免闭包陈旧值。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Button missing type attribute",
+            "reason": "The <button> element has no type specified, defaulting to type=\"submit\". If rendered inside a <form>, clicking it will submit the form.",
+            "suggestion": "Add type=\"button\" to the <button> element.",
+            "severity": "medium"
+          },
+          {
+            "title": "Missing imports for React hooks",
+            "reason": "The useState hook is used without importing it from the 'react' library.",
+            "suggestion": "Add 'import { useState } from \"react\";' at the beginning of the file.",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-10-functional-setstate",
+        "code": "function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>{count}</button>\n  );\n}\n",
+        "expect": "clean",
+        "note": "用函数式更新避免闭包陈旧值。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing import for useState",
+            "reason": "The hook useState is used but not imported from 'react'.",
+            "suggestion": "Add 'import { useState } from \"react\";' at the top of the file.",
+            "severity": "high",
+            "line": 2
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-10-functional-setstate",
+        "code": "function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>{count}</button>\n  );\n}\n",
+        "expect": "clean",
+        "note": "用函数式更新避免闭包陈旧值。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing import for useState",
+            "reason": "useState is used but not imported from the 'react' library, which will cause a ReferenceError at runtime.",
+            "suggestion": "Add `import { useState } from 'react';` at the top of the file.",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-11-derive-during-render",
+        "code": "function Price({ amount, rate }) {\n  const total = amount * rate;\n  return <div>{total.toFixed(2)}</div>;\n}\n",
+        "expect": "clean",
+        "note": "渲染期只做纯派生，不 setState。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Potential NaN result from invalid inputs",
+            "reason": "If `amount` or `rate` is not a number (e.g., undefined, null, or a string that cannot be coerced), their product will be `NaN`, and `NaN.toFixed(2)` renders the string 'NaN' instead of a valid price.",
+            "suggestion": "Add default parameter values (e.g., `amount = 0, rate = 0`) or validate the inputs to ensure they are finite numbers before performing the calculation.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-11-derive-during-render",
+        "code": "function Price({ amount, rate }) {\n  const total = amount * rate;\n  return <div>{total.toFixed(2)}</div>;\n}\n",
+        "expect": "clean",
+        "note": "渲染期只做纯派生，不 setState。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing input validation for numeric props",
+            "reason": "The component directly multiplies `amount` and `rate` without verifying they are numbers. If either is not a number, the product will be `NaN`, and calling `toFixed()` on `NaN` will throw a TypeError.",
+            "suggestion": "Validate that both `amount` and `rate` are numbers before performing calculations, or provide fallback values.",
+            "severity": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-11-derive-during-render",
+        "code": "function Price({ amount, rate }) {\n  const total = amount * rate;\n  return <div>{total.toFixed(2)}</div>;\n}\n",
+        "expect": "clean",
+        "note": "渲染期只做纯派生，不 setState。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "未处理无效的输入值",
+            "reason": "当amount或rate为undefined/null时，total为NaN，显示为\"NaN\"而非错误提示",
+            "suggestion": "在计算前校验参数是否为有效数字，无效时返回默认值或错误状态",
+            "severity": "medium"
+          },
+          {
+            "title": "缺少props类型验证",
+            "reason": "未对传入的amount和rate进行类型检查，非数字类型可能导致运行时错误",
+            "suggestion": "添加PropTypes类型定义或TypeScript接口约束参数类型",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-12-copy-props-to-state-once",
+        "code": "function Editor({ initialTitle }) {\n  const [title, setTitle] = useState(initialTitle);\n  return (\n    <input value={title} onChange={(e) => setTitle(e.target.value)} />\n  );\n}\n",
+        "expect": "clean",
+        "note": "用 props 初始化本地 state，不修改 props。"
+      },
+      "review": {
+        "issues": []
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-12-copy-props-to-state-once",
+        "code": "function Editor({ initialTitle }) {\n  const [title, setTitle] = useState(initialTitle);\n  return (\n    <input value={title} onChange={(e) => setTitle(e.target.value)} />\n  );\n}\n",
+        "expect": "clean",
+        "note": "用 props 初始化本地 state，不修改 props。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing input label",
+            "reason": "The input element has no associated label, violating accessibility best practices and making it unusable for screen readers.",
+            "suggestion": "Add a label element or aria-label attribute to the input.",
+            "severity": "medium"
+          },
+          {
+            "title": "Undefined initial state",
+            "reason": "If initialTitle is undefined, the input value will be undefined, which is less predictable than an empty string.",
+            "suggestion": "Default the state to an empty string: useState(initialTitle ?? '')",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "ok": true,
+      "evalCase": {
+        "id": "clean-12-copy-props-to-state-once",
+        "code": "function Editor({ initialTitle }) {\n  const [title, setTitle] = useState(initialTitle);\n  return (\n    <input value={title} onChange={(e) => setTitle(e.target.value)} />\n  );\n}\n",
+        "expect": "clean",
+        "note": "用 props 初始化本地 state，不修改 props。"
+      },
+      "review": {
+        "issues": [
+          {
+            "title": "Missing input type attribute",
+            "reason": "The <input> element relies on the browser default type, which can lead to inconsistent behavior or security vulnerabilities.",
+            "suggestion": "Explicitly add type=\"text\" to the <input> element.",
+            "severity": "medium"
+          },
+          {
+            "title": "Missing accessible label",
+            "reason": "There is no associated <label> for the input, making it inaccessible to screen readers.",
+            "suggestion": "Add a <label> element with htmlFor pointing to the input's id, and give the input a corresponding id.",
+            "severity": "high"
+          },
+          {
+            "title": "Inline onChange handler",
+            "reason": "Using an inline arrow function for the onChange event creates a new function reference on every render, which can cause unnecessary re-renders if the component is memoized.",
+            "suggestion": "Extract the handler into a separate named function or wrap it in useCallback.",
+            "severity": "low"
+          }
+        ]
+      }
+    }
+  ]
+}
