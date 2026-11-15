@@ -1,0 +1,158 @@
+[
+  {
+    "id": "find-01-conditional-hook",
+    "expect": "find",
+    "keywords": ["hook", "条件"],
+    "note": "early return 后再调用 Hook，违反 Rules of Hooks。",
+    "code": "function User({ id }) {\n  if (!id) return null;\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n"
+  },
+  {
+    "id": "find-02-missing-effect-deps",
+    "expect": "find",
+    "keywords": ["依赖", "useEffect", "id"],
+    "note": "effect 使用了 id，但依赖数组为空。",
+    "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch('/api/users/' + id).then((r) => r.json()).then(setUser);\n  }, []);\n  return <div>{user?.name}</div>;\n}\n"
+  },
+  {
+    "id": "find-03-key-index",
+    "expect": "find",
+    "keywords": ["key", "index"],
+    "note": "列表用 index 当 key，重排/删除时状态会错位。",
+    "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo, index) => (\n        <li key={index}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n"
+  },
+  {
+    "id": "find-04-mutate-state",
+    "expect": "find",
+    "keywords": ["state", "直接修改", "push"],
+    "note": "直接 mutate state 再 setState，React 可能检测不到更新。",
+    "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    todos.push({ id: Date.now(), text });\n    setTodos(todos);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n"
+  },
+  {
+    "id": "find-05-hook-in-loop",
+    "expect": "find",
+    "keywords": ["hook", "循环", "for"],
+    "note": "在循环里调用 Hook，调用次数不稳定。",
+    "code": "function Board({ cells }) {\n  const values = [];\n  for (let i = 0; i < cells.length; i++) {\n    values.push(useState(cells[i]));\n  }\n  return <div>{values.map(([v]) => v)}</div>;\n}\n"
+  },
+  {
+    "id": "find-06-ternary-hook",
+    "expect": "find",
+    "keywords": ["hook", "三元", "条件"],
+    "note": "三元表达式里条件调用 Hook。",
+    "code": "function Panel({ advanced }) {\n  const mode = advanced ? useAdvancedMode() : useBasicMode();\n  return <div>{mode}</div>;\n}\n"
+  },
+  {
+    "id": "find-07-hook-inside-callback",
+    "expect": "find",
+    "keywords": ["hook", "callback", "useEffect"],
+    "note": "在 useEffect 回调里再调 Hook。",
+    "code": "function Tracker({ id }) {\n  useEffect(() => {\n    const [count, setCount] = useState(0);\n    setCount(count + 1);\n  }, [id]);\n  return null;\n}\n"
+  },
+  {
+    "id": "find-08-missing-callback-deps",
+    "expect": "find",
+    "keywords": ["依赖", "useCallback", "query"],
+    "note": "useCallback 闭包用了 query，但依赖数组为空。",
+    "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, []);\n  return <button onClick={onSearch}>Search</button>;\n}\n"
+  },
+  {
+    "id": "find-09-missing-memo-deps",
+    "expect": "find",
+    "keywords": ["依赖", "useMemo", "items"],
+    "note": "useMemo 依赖了 items，却写空依赖。",
+    "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), []);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n"
+  },
+  {
+    "id": "find-10-and-conditional-hook",
+    "expect": "find",
+    "keywords": ["hook", "&&", "条件"],
+    "note": "用 && 短路条件调用 Hook。",
+    "code": "function Profile({ enabled }) {\n  enabled && useFeatureFlag('profile-v2');\n  return <div>profile</div>;\n}\n"
+  },
+  {
+    "id": "find-11-setstate-during-render",
+    "expect": "find",
+    "keywords": ["setState", "render", "渲染"],
+    "note": "在渲染阶段直接 setState，可能死循环。",
+    "code": "function Counter({ step }) {\n  const [count, setCount] = useState(0);\n  if (step > 0) {\n    setCount(count + step);\n  }\n  return <div>{count}</div>;\n}\n"
+  },
+  {
+    "id": "find-12-mutate-props",
+    "expect": "find",
+    "keywords": ["props", "直接修改", "mutate"],
+    "note": "直接修改 props 对象字段。",
+    "code": "function Editor({ draft }) {\n  draft.title = draft.title.trim();\n  return <input value={draft.title} readOnly />;\n}\n"
+  },
+  {
+    "id": "clean-01-effect-with-deps",
+    "expect": "clean",
+    "note": "Hook 在顶层，effect 依赖正确且有取消标志。",
+    "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  return <div>{user?.name}</div>;\n}\n"
+  },
+  {
+    "id": "clean-02-hooks-before-early-return",
+    "expect": "clean",
+    "note": "先无条件调用 Hook，再 early return。",
+    "code": "function User({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    if (!id) return;\n    let cancelled = false;\n    fetch('/api/users/' + id)\n      .then((r) => r.json())\n      .then((data) => {\n        if (!cancelled) setUser(data);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [id]);\n  if (!id) return null;\n  return <div>{user?.name}</div>;\n}\n"
+  },
+  {
+    "id": "clean-03-stable-key",
+    "expect": "clean",
+    "note": "列表用稳定 id 当 key。",
+    "code": "function TodoList({ todos }) {\n  return (\n    <ul>\n      {todos.map((todo) => (\n        <li key={todo.id}>{todo.text}</li>\n      ))}\n    </ul>\n  );\n}\n"
+  },
+  {
+    "id": "clean-04-immutable-state-update",
+    "expect": "clean",
+    "note": "用不可变方式更新 state。",
+    "code": "function TodoList() {\n  const [todos, setTodos] = useState([]);\n  function addTodo(text) {\n    setTodos((prev) => [...prev, { id: Date.now(), text }]);\n  }\n  return <button onClick={() => addTodo('hi')}>Add</button>;\n}\n"
+  },
+  {
+    "id": "clean-05-conditional-inside-effect",
+    "expect": "clean",
+    "note": "条件写在 effect 内部，Hook 本身始终调用。",
+    "code": "function Panel({ advanced }) {\n  const basic = useBasicMode();\n  const advancedMode = useAdvancedMode();\n  const mode = advanced ? advancedMode : basic;\n  return <div>{mode}</div>;\n}\n"
+  },
+  {
+    "id": "clean-06-callback-with-deps",
+    "expect": "clean",
+    "note": "useCallback 依赖齐全。",
+    "code": "function Search({ query }) {\n  const onSearch = useCallback(() => {\n    fetch('/api/search?q=' + query);\n  }, [query]);\n  return <button onClick={onSearch}>Search</button>;\n}\n"
+  },
+  {
+    "id": "clean-07-memo-with-deps",
+    "expect": "clean",
+    "note": "useMemo 依赖齐全。",
+    "code": "function SortedList({ items }) {\n  const sorted = useMemo(() => items.slice().sort(), [items]);\n  return <ul>{sorted.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;\n}\n"
+  },
+  {
+    "id": "clean-08-effect-cleanup-timer",
+    "expect": "clean",
+    "note": "定时器有清理函数。",
+    "code": "function Clock() {\n  const [now, setNow] = useState(Date.now());\n  useEffect(() => {\n    const id = setInterval(() => setNow(Date.now()), 1000);\n    return () => clearInterval(id);\n  }, []);\n  return <div>{now}</div>;\n}\n"
+  },
+  {
+    "id": "clean-09-custom-hook-top-level",
+    "expect": "clean",
+    "note": "自定义 Hook 在组件顶层无条件调用。",
+    "code": "function useWindowWidth() {\n  const [width, setWidth] = useState(window.innerWidth);\n  useEffect(() => {\n    const onResize = () => setWidth(window.innerWidth);\n    window.addEventListener('resize', onResize);\n    return () => window.removeEventListener('resize', onResize);\n  }, []);\n  return width;\n}\n\nfunction Layout() {\n  const width = useWindowWidth();\n  return <div>{width}</div>;\n}\n"
+  },
+  {
+    "id": "clean-10-functional-setstate",
+    "expect": "clean",
+    "note": "用函数式更新避免闭包陈旧值。",
+    "code": "function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>{count}</button>\n  );\n}\n"
+  },
+  {
+    "id": "clean-11-derive-during-render",
+    "expect": "clean",
+    "note": "渲染期只做纯派生，不 setState。",
+    "code": "function Price({ amount, rate }) {\n  const total = amount * rate;\n  return <div>{total.toFixed(2)}</div>;\n}\n"
+  },
+  {
+    "id": "clean-12-copy-props-to-state-once",
+    "expect": "clean",
+    "note": "用 props 初始化本地 state，不修改 props。",
+    "code": "function Editor({ initialTitle }) {\n  const [title, setTitle] = useState(initialTitle);\n  return (\n    <input value={title} onChange={(e) => setTitle(e.target.value)} />\n  );\n}\n"
+  }
+]

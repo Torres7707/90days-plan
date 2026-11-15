@@ -1,5 +1,6 @@
 allowBuilds:
   unrs-resolver: false
+  esbuild: false
 minimumReleaseAgeExclude:
   - '@ai-sdk/gateway@4.0.130'
   - '@ai-sdk/mcp@2.0.87'
