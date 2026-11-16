@@ -145,8 +145,12 @@ function Cards({
           <p>严重程度：{issue?.severity ? SEVERITY_LABEL[issue.severity] : PENDING}</p>
           <p>原因：{issue?.reason ?? PENDING}</p>
           <p>建议：{issue?.suggestion ?? PENDING}</p>
-          {/* line 在 schema 里是可选的：流结束后仍没有就不显示，避免一直写“生成中...” */}
-          {issue?.line !== undefined ? <p>行号：{issue.line}</p> : !finished && <p>行号：{PENDING}</p>}
+          {/* line 为 null 表示没有行号；流式过程中还没出现则显示占位 */}
+          {issue?.line != null ? (
+            <p>行号：{issue.line}</p>
+          ) : !finished && issue?.line === undefined ? (
+            <p>行号：{PENDING}</p>
+          ) : null}
         </li>
       ))}
     </ol>

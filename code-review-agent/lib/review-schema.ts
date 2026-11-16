@@ -13,7 +13,9 @@ export const issueSchema = z.object({
   reason: z.string().describe("为什么这是问题"),
   suggestion: z.string().describe("建议怎么改"),
   severity: z.enum(["high", "medium", "low"]).describe("严重程度"),
-  line: z.number().optional().describe("相关代码行号，没有则省略"),
+  // OpenAI structured output 要求 properties 里每个 key 都在 required 中；
+  // .optional() 会漏出 required，网关直接 400。没有行号时用 null。
+  line: z.number().nullable().describe("相关代码行号，没有则为 null"),
 });
 
 export const reviewSchema = z.object({
@@ -31,7 +33,7 @@ export type PartialIssue = {
   reason?: string;
   suggestion?: string;
   severity?: "high" | "medium" | "low";
-  line?: number;
+  line?: number | null;
 };
 
 export type PartialReview = {

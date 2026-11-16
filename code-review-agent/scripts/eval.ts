@@ -92,7 +92,7 @@ function printHumanReview(results: { evalCase: EvalCase; review: Review }[]): vo
         console.log(`    - ${issue.title}`);
         console.log(`      原因：${issue.reason}`);
         console.log(`      建议：${issue.suggestion}`);
-        if (issue.line !== undefined) {
+        if (issue.line != null) {
           console.log(`      行号：${issue.line}`);
         }
       }
