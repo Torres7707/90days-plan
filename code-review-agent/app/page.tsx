@@ -6,6 +6,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import type { MyUIMessage } from "@/lib/types";
 import { PrototypeSwitcher } from "@/app/components/PrototypeSwitcher";
 import { VariantA, VARIANT_NAME as NAME_A } from "@/app/prototype-ui/VariantA";
@@ -58,6 +59,13 @@ function HomePrototype() {
       {variant === "B" && <VariantB {...props} />}
       {variant === "C" && <VariantC {...props} />}
       <PrototypeSwitcher variants={[...VARIANTS]} current={variant} />
+      {/* 第 3 周：结构化卡片版在 /cards */}
+      <Link
+        href="/cards"
+        className="fixed right-4 top-4 z-[9999] rounded-full border border-zinc-700 bg-zinc-950 px-3 py-1 text-xs text-zinc-100 shadow"
+      >
+        结构化卡片版（第 3 周）→
+      </Link>
     </>
   );
 }
