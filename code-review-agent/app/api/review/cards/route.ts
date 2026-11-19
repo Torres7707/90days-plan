@@ -1,7 +1,7 @@
 // POST /api/review/cards —— 第 3 周：结构化评审卡片。
 // 和第 2 周的 /api/review 并存：那条是 useChat + UI message stream（纯文字），
 // 这条是 useObject + 文本流（模型按 reviewSchema 吐 JSON，前端边收边解析成不完整对象）。
-import { Output, createTextStreamResponse, streamText } from "ai";
+import { Output, createTextStreamResponse, streamText,generateText } from "ai";
 import { z } from "zod";
 import { getModel } from "@/lib/model";
 import { buildReviewPrompt } from "@/lib/review-prompt";
@@ -36,6 +36,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
+    // const result = generateText({
     model,
     prompt: buildReviewPrompt(body.data.code),
     output: Output.object({ schema: reviewSchema }),
