@@ -1,10 +1,18 @@
 # 90 Days — React → AI Agent Front-End
 
+> **2026-11-22 起，本仓库停止作为后续学习的主入口。** 现行计划与进度入口是 [plan-tracker](https://plan-tracker-eta.vercel.app)（私有仓库 `Torres7707/plan-tracker`）。本仓库里的练习和项目保留作历史参考，代码不删除。
+>
+> 现行计划是《Agent 开发自学路线（v3）》，2026-11-22 确认，用来替换下面保留的 90 天 v2。来源是 plan-tracker 根目录的 `计划调整方案.md`，摘要在 `计划总结.md`，网站上的路线在 `src/data/roadmap.ts`。路线页：<https://plan-tracker-eta.vercel.app/roadmap>。v2 的打卡、测验和笔记在网站的「归档」。
+>
+> 以下正文是 v2 历史记录，不再指导后续学习。
+
 I'm Torres, a React developer. This repo documents my 90-day plan (22 Oct 2026 – 19 Jan 2027) to become an AI application front-end developer — building a real AI agent with streaming, structured output, tool calling, evals, a Skill and an MCP server, not just following tutorials.
 
 **Goal:** by Day 90, independently ship one genuinely usable AI app, and be able to explain how it's designed, how it handles errors, how it controls cost, and how its answers are verified.
 
-## Projects
+## Projects（v2 历史参考）
+
+表里的 “main project” 和 “In progress” 是当时的写法，不是现行目标。
 
 | Where | What it is | Status |
 | --- | --- | --- |
@@ -14,13 +22,13 @@ I'm Torres, a React developer. This repo documents my 90-day plan (22 Oct 2026 �
 | `ts-exercise/` | Small TypeScript type exercises. | Ongoing |
 | `notes/` | Study notes (agents, skills, harness engineering, code review). | Ongoing |
 
-## The plan (v2)
+## The plan (v2，历史)
 
 - **Phase 1 (22 Oct – 22 Nov 2026, Weeks 1–4) — Basics, streaming UI, structured output, tool loop.** AI SDK 7 basics, `useChat` streaming UI with cancel on both ends, Zod structured review cards, a first eval set (recall / false-positive rate), tool calling and the agent loop.
 - **Phase 2 (23 Nov – 20 Dec 2026, Weeks 5–8) — Real PRs, Skill, MCP.** Review real GitHub PRs (including large diffs), write a review Skill and a TypeScript MCP server and use them in Claude Code / Cursor; Postgres history if time allows.
 - **Phase 3 (21 Dec 2026 – 19 Jan 2027, Weeks 9–12) — Reliability and release.** Background runs with human approval (optional), rendering performance and trace visualisation, prompt-injection / timeout / cost control and tests, then deploy, demo video, bilingual README and resume update.
 
-## How I learn
+## How I learn（v2 历史）
 
 Every topic follows the same loop: **Watch** (one focused tutorial) → **Use** (build it into the code-review agent and commit) → **Break** (make it fail on purpose, then fix it) → **Explain** (write up the design, the alternatives, and the failure points). A topic counts as learned when I can predict what a change will do, debug it from a symptom, apply it to a new case, and explain it in my own words — not when I can retype it from memory, and not when AI generates it for me.
 
@@ -41,6 +49,6 @@ Try asking it for the status of order `ACME-1001` — it answers by calling the 
 
 TypeScript · React · Next.js · Vercel AI SDK · Zod
 
-## Progress log
+## Progress log（v2 历史）
 
 - **2026-10-22 — Day 1:** Phase 1 starter running locally. First tool call working end to end (order lookup with a grounded answer). Repo created.
